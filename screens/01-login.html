@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AR México - Inicio de Sesión</title>
+    
+    <!-- CSS FASE 2 -->
+    <style>
+        /* Reset y configuración base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        /* Fondo con gradiente animado */
+        .background-gradient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, 
+                #FF006E 0%,    /* Rosa neón */
+                #8B5CF6 25%,   /* Morado */
+                #06B6D4 50%,   /* Cyan */
+                #00D9FF 75%,   /* Azul eléctrico */
+                #FF006E 100%   /* Rosa neón */
+            );
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            z-index: -2;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        /* Elementos flotantes mexicanos */
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+        
+        .float-item {
+            position: absolute;
+            font-size: 80px;
+            opacity: 0.4;
+            animation: float 20s infinite ease-in-out;
+        }
+        
+        .cactus {
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+        
+        .guitar {
+            top: 60%;
+            right: 8%;
+            animation-delay: 2s;
+            font-size: 100px;
+        }
+        
+        .pyramid {
+            top: 10%;
+            right: 15%;
+            animation-delay: 4s;
+            font-size: 60px;
+            color: #FFD700;
+        }
+        
+        .confetti {
+            bottom: 20%;
+            left: 8%;
+            animation-delay: 6s;
+        }
+        
+        .cactus-2 {
+            top: 70%;
+            left: 15%;
+            animation-delay: 8s;
+            font-size: 60px;
+        }
+        
+        .maracas {
+            top: 35%;
+            right: 20%;
+            animation-delay: 10s;
+            font-size: 70px;
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            25% {
+                transform: translateY(-30px) rotate(5deg);
+            }
+            50% {
+                transform: translateY(-20px) rotate(-5deg);
+            }
+            75% {
+                transform: translateY(-40px) rotate(3deg);
+            }
+        }
+        
+        /* Contenedor principal */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        /* Card de login con glassmorphism */
+        .login-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 30px;
+            padding: 50px 40px;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            animation: fadeInScale 0.6s ease-out;
+        }
+        
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        /* Logo AR */
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        
+        .logo-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid #FFD700;
+            background: linear-gradient(135deg, 
+                rgba(255, 0, 110, 0.6),
+                rgba(139, 92, 246, 0.6)
+            );
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(255, 215, 0, 0.4);
+            animation: pulseGlow 3s ease-in-out infinite;
+        }
+        
+        @keyframes pulseGlow {
+            0%, 100% {
+                box-shadow: 0 4px 20px rgba(255, 215, 0, 0.4);
+            }
+            50% {
+                box-shadow: 0 4px 30px rgba(255, 215, 0, 0.7);
+            }
+        }
+        
+        .logo-text {
+            font-size: 48px;
+            font-weight: 800;
+            color: white;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Tagline */
+        .tagline {
+            color: white;
+            font-size: 16px;
+            font-weight: 500;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Formulario */
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        /* Input groups */
+        .input-group {
+            position: relative;
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            color: white;
+            font-size: 15px;
+            font-weight: 500;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        
+        .input-field::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .input-field:focus {
+            border-color: #FFD700;
+            background: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+        }
+        
+        /* Botón de login */
+        .btn-login {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 25px;
+            background: linear-gradient(90deg, #FF6B35, #FF006E);
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
+            margin-top: 10px;
+        }
+        
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(255, 107, 53, 0.6);
+        }
+        
+        .btn-login:active {
+            transform: translateY(0);
+        }
+        
+        /* Link recuperar contraseña */
+        .link-forgot-password {
+            display: block;
+            text-align: center;
+            color: white;
+            font-size: 14px;
+            text-decoration: none;
+            margin-top: 15px;
+            transition: color 0.3s ease;
+        }
+        
+        .link-forgot-password:hover {
+            color: #FFD700;
+            text-decoration: underline;
+        }
+        
+        /* Separador */
+        .divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.3);
+            margin: 30px 0 20px 0;
+        }
+        
+        /* Texto de registro */
+        .register-text {
+            text-align: center;
+            color: white;
+            font-size: 14px;
+        }
+        
+        .link-register {
+            color: #FFD700;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .link-register:hover {
+            text-decoration: underline;
+            color: #FFE55C;
+        }
+        
+        /* Animación de carga */
+        .btn-login.loading {
+            position: relative;
+            color: transparent;
+            pointer-events: none;
+        }
+        
+        .btn-login.loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 50%;
+            left: 50%;
+            margin-left: -10px;
+            margin-top: -10px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spinner 0.8s linear infinite;
+        }
+        
+        @keyframes spinner {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Responsive */
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 40px 30px;
+            }
+            
+            .logo-circle {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .logo-text {
+                font-size: 40px;
+            }
+            
+            .float-item {
+                font-size: 60px;
+            }
+            
+            .guitar {
+                font-size: 80px;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- Fondo animado con gradiente -->
+    <div class="background-gradient"></div>
+    
+    <!-- Elementos mexicanos flotantes decorativos -->
+    <div class="floating-elements">
+        <div class="float-item cactus">🌵</div>
+        <div class="float-item guitar">🎸</div>
+        <div class="float-item pyramid">🔺</div>
+        <div class="float-item confetti">🎊</div>
+        <div class="float-item cactus-2">🌵</div>
+        <div class="float-item maracas">🎉</div>
+    </div>
+    
+    <!-- Contenedor principal del login -->
+    <div class="login-container">
+        
+        <!-- Card de login con efecto glassmorphism -->
+        <div class="login-card">
+            
+            <!-- Logo AR con borde dorado -->
+            <div class="logo-container">
+                <div class="logo-circle">
+                    <span class="logo-text">AR</span>
+                </div>
+            </div>
+            
+            <!-- Tagline descriptivo -->
+            <h1 class="tagline">Descubre México en Realidad Aumentada</h1>
+            
+            <!-- Formulario de login -->
+            <form class="login-form" id="loginForm">
+                
+                <!-- Input de Email/Usuario -->
+                <div class="input-group">
+                    <input 
+                        type="text" 
+                        id="username" 
+                        class="input-field" 
+                        placeholder="Email o usuario"
+                        required
+                    >
+                </div>
+                
+                <!-- Input de Contraseña -->
+                <div class="input-group">
+                    <input 
+                        type="password" 
+                        id="password" 
+                        class="input-field" 
+                        placeholder="Contraseña"
+                        required
+                    >
+                </div>
+                
+                <!-- Botón de Login -->
+                <button type="submit" class="btn-login">
+                    Login
+                </button>
+                
+                <!-- Link recuperar contraseña -->
+                <a href="#" class="link-forgot-password">
+                    ¿Olvidaste tu contraseña?
+                </a>
+                
+            </form>
+            
+            <!-- Separador -->
+            <div class="divider"></div>
+            
+            <!-- Link de registro -->
+            <p class="register-text">
+                ¿No tienes cuenta? 
+                <a href="#" class="link-register">Regístrate</a>
+            </p>
+            
+        </div>
+        
+    </div>
+    
+    <!-- JavaScript FASE 3 -->
+    <script>
+        // Esperar a que el DOM esté completamente cargado
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // ===== ELEMENTOS DEL DOM =====
+            const loginForm = document.getElementById('loginForm');
+            const usernameInput = document.getElementById('username');
+            const passwordInput = document.getElementById('password');
+            const btnLogin = document.querySelector('.btn-login');
+            const forgotPasswordLink = document.querySelector('.link-forgot-password');
+            const registerLink = document.querySelector('.link-register');
+            
+            // ===== ANIMACIÓN DE ELEMENTOS FLOTANTES =====
+            const floatingItems = document.querySelectorAll('.float-item');
+            
+            // Agregar movimiento aleatorio adicional a elementos flotantes
+            floatingItems.forEach((item, index) => {
+                const randomDelay = Math.random() * 5;
+                const randomDuration = 15 + Math.random() * 10;
+                item.style.animationDelay = `${randomDelay}s`;
+                item.style.animationDuration = `${randomDuration}s`;
+            });
+            
+            // ===== VALIDACIÓN DEL FORMULARIO =====
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const username = usernameInput.value.trim();
+                const password = passwordInput.value.trim();
+                
+                // Validación básica
+                if (username === '') {
+                    showError(usernameInput, 'Por favor ingresa tu email o usuario');
+                    return;
+                }
+                
+                if (password === '') {
+                    showError(passwordInput, 'Por favor ingresa tu contraseña');
+                    return;
+                }
+                
+                if (password.length < 6) {
+                    showError(passwordInput, 'La contraseña debe tener al menos 6 caracteres');
+                    return;
+                }
+                
+                // Si la validación pasa, procesar login
+                processLogin(username, password);
+            });
+            
+            // ===== FUNCIÓN PARA MOSTRAR ERRORES =====
+            function showError(input, message) {
+                // Agregar clase de error al input
+                input.style.borderColor = '#FF006E';
+                input.style.boxShadow = '0 0 15px rgba(255, 0, 110, 0.5)';
+                
+                // Crear tooltip de error si no existe
+                let errorTooltip = input.parentElement.querySelector('.error-tooltip');
+                
+                if (!errorTooltip) {
+                    errorTooltip = document.createElement('div');
+                    errorTooltip.className = 'error-tooltip';
+                    errorTooltip.style.cssText = `
+                        position: absolute;
+                        top: -35px;
+                        left: 50%;
+                        transform: translateX(-50%);
+                        background: rgba(255, 0, 110, 0.95);
+                        color: white;
+                        padding: 8px 15px;
+                        border-radius: 10px;
+                        font-size: 12px;
+                        white-space: nowrap;
+                        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+                        animation: shake 0.5s ease;
+                        z-index: 10;
+                    `;
+                    input.parentElement.appendChild(errorTooltip);
+                }
+                
+                errorTooltip.textContent = message;
+                
+                // Remover error después de 3 segundos
+                setTimeout(() => {
+                    input.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+                    input.style.boxShadow = 'none';
+                    if (errorTooltip) {
+                        errorTooltip.remove();
+                    }
+                }, 3000);
+                
+                // Agregar animación de shake
+                const shakeKeyframes = `
+                    @keyframes shake {
+                        0%, 100% { transform: translateX(-50%) translateY(0); }
+                        25% { transform: translateX(-50%) translateY(-5px); }
+                        75% { transform: translateX(-50%) translateY(5px); }
+                    }
+                `;
+                
+                if (!document.getElementById('shake-animation')) {
+                    const style = document.createElement('style');
+                    style.id = 'shake-animation';
+                    style.textContent = shakeKeyframes;
+                    document.head.appendChild(style);
+                }
+            }
+            
+            // ===== FUNCIÓN PARA PROCESAR LOGIN =====
+            function processLogin(username, password) {
+                // Agregar clase de loading al botón
+                btnLogin.classList.add('loading');
+                btnLogin.disabled = true;
+                
+                // Simular petición al servidor (2 segundos)
+                setTimeout(() => {
+                    // Login exitoso
+                    console.log('Login exitoso:', { username, password });
+                    
+                    // Guardar sesión en localStorage
+                    localStorage.setItem('isLoggedIn', 'true');
+                    localStorage.setItem('username', username);
+                    
+                    // Mostrar mensaje de éxito
+                    showSuccess();
+                    
+                    // Redirigir al dashboard después de 1.5 segundos
+                    setTimeout(() => {
+                        window.location.href = '02-dashboard.html';
+                    }, 1500);
+                    
+                }, 2000);
+            }
+            
+            // ===== FUNCIÓN PARA MOSTRAR ÉXITO =====
+            function showSuccess() {
+                btnLogin.classList.remove('loading');
+                btnLogin.textContent = '✓ ¡Bienvenido!';
+                btnLogin.style.background = 'linear-gradient(90deg, #10b981, #059669)';
+                
+                // Animar el card
+                const card = document.querySelector('.login-card');
+                card.style.transform = 'scale(1.02)';
+                
+                setTimeout(() => {
+                    card.style.transform = 'scale(1)';
+                }, 300);
+            }
+            
+            // ===== LIMPIAR ERRORES AL ESCRIBIR =====
+            usernameInput.addEventListener('input', function() {
+                const errorTooltip = this.parentElement.querySelector('.error-tooltip');
+                if (errorTooltip) {
+                    errorTooltip.remove();
+                }
+                this.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+                this.style.boxShadow = 'none';
+            });
+            
+            passwordInput.addEventListener('input', function() {
+                const errorTooltip = this.parentElement.querySelector('.error-tooltip');
+                if (errorTooltip) {
+                    errorTooltip.remove();
+                }
+                this.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+                this.style.boxShadow = 'none';
+            });
+            
+            // ===== EVENTOS DE LINKS =====
+            forgotPasswordLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                alert('Funcionalidad de recuperación de contraseña próximamente...');
+            });
+            
+            registerLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                alert('Pantalla de registro próximamente...');
+            });
+            
+            // ===== EFECTOS DE ENTRADA AL CARGAR =====
+            setTimeout(() => {
+                floatingItems.forEach((item, index) => {
+                    item.style.opacity = '0.4';
+                });
+            }, 100);
+            
+            // ===== AUTOCOMPLETAR DEMO (OPCIONAL - REMOVER EN PRODUCCIÓN) =====
+            // Descomentar las siguientes líneas para pruebas rápidas
+            // usernameInput.value = 'demo@armexixo.com';
+            // passwordInput.value = 'demo123';
+            
+        });
+    </script>
+    
+</body>
+</html>

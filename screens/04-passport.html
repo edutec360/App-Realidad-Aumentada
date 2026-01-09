@@ -1,0 +1,1475 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AR México - Pasaporte Digital</title>
+    
+    <!-- CSS FASE 2 -->
+    <style>
+        /* Reset y configuración base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            background: #2C3E50;
+            overflow-x: hidden;
+            padding-bottom: 80px;
+        }
+        
+        /* Fondo con gradiente */
+        .background-gradient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, 
+                #667eea 0%,
+                #764ba2 25%,
+                #f093fb 50%,
+                #4facfe 75%,
+                #00f2fe 100%
+            );
+            background-size: 400% 400%;
+            animation: gradientShift 20s ease infinite;
+            z-index: -1;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        /* Contenedor principal */
+        .passport-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* ===== HEADER ===== */
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 25px;
+            padding: 20px 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            animation: slideDown 0.6s ease-out;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .passport-icon {
+            font-size: 48px;
+            filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.2));
+        }
+        
+        .header-content {
+            flex: 1;
+        }
+        
+        .passport-title {
+            color: white;
+            font-size: 28px;
+            font-weight: 800;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            margin-bottom: 5px;
+        }
+        
+        .level-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(90deg, #FFD700, #FFA500);
+            padding: 8px 20px;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+        }
+        
+        .level-icon {
+            font-size: 20px;
+        }
+        
+        .level-text {
+            color: white;
+            font-weight: 700;
+            font-size: 14px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+        
+        .close-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(255, 107, 107, 0.3);
+            color: white;
+            font-size: 24px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .close-btn:hover {
+            background: rgba(255, 107, 107, 0.5);
+            transform: scale(1.1);
+        }
+        
+        /* ===== MAPA DE MÉXICO ===== */
+        .map-section {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 25px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            animation: fadeInUp 0.6s ease-out 0.2s;
+            animation-fill-mode: both;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .map-container {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto 20px;
+            background: linear-gradient(180deg, #E0F2FE 0%, #BAE6FD 100%);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .mexico-svg-map {
+            filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.15));
+        }
+        
+        /* Estilos de estados SVG */
+        .state {
+            stroke: rgba(255, 255, 255, 0.4);
+            stroke-width: 2;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .state:hover {
+            stroke: white;
+            stroke-width: 3;
+            filter: brightness(1.2);
+        }
+        
+        /* Estados bloqueados (gris) */
+        .state.locked {
+            fill: #6B7280;
+            opacity: 0.6;
+        }
+        
+        .state.locked:hover {
+            fill: #9CA3AF;
+        }
+        
+        /* Estados parciales (dorado) */
+        .state.partial {
+            fill: #F59E0B;
+            opacity: 0.8;
+        }
+        
+        .state.partial:hover {
+            fill: #FBBF24;
+        }
+        
+        /* Estados completados (verde) */
+        .state.completed {
+            fill: #10B981;
+            opacity: 0.9;
+        }
+        
+        .state.completed:hover {
+            fill: #34D399;
+        }
+        
+        /* Animación de pulso al hacer click */
+        @keyframes statePulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+        
+        .state.active {
+            animation: statePulse 0.6s ease;
+        }
+        
+        /* Pins en el mapa */
+        .map-pins {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        .pin {
+            position: absolute;
+            font-size: 32px;
+            filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.3));
+            animation: pinBounce 2s ease-in-out infinite;
+        }
+        
+        @keyframes pinBounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+        
+        /* Leyenda del mapa */
+        .map-legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .legend-color {
+            width: 30px;
+            height: 20px;
+            border-radius: 5px;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+        }
+        
+        .locked-color {
+            background: #6B7280;
+        }
+        
+        .partial-color {
+            background: #F59E0B;
+        }
+        
+        .completed-color {
+            background: #10B981;
+        }
+        
+        .legend-item span {
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* ===== BARRA DE PROGRESO XP ===== */
+        .progress-section {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 25px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            animation: fadeInUp 0.6s ease-out 0.3s;
+            animation-fill-mode: both;
+        }
+        
+        .xp-bar {
+            width: 100%;
+            height: 30px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .xp-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #FFD700, #FFA500, #FF8C00);
+            border-radius: 15px;
+            transition: width 2s ease;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .xp-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.4), 
+                transparent
+            );
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            to {
+                left: 100%;
+            }
+        }
+        
+        .xp-text {
+            text-align: center;
+            color: white;
+            font-size: 20px;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* ===== LOGROS ===== */
+        .achievements-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            animation: fadeInUp 0.6s ease-out 0.4s;
+            animation-fill-mode: both;
+        }
+        
+        .achievement-card {
+            position: relative;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .achievement-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .blue-card {
+            background: linear-gradient(135deg, 
+                rgba(59, 130, 246, 0.3),
+                rgba(37, 99, 235, 0.3)
+            );
+        }
+        
+        .pink-card {
+            background: linear-gradient(135deg, 
+                rgba(236, 72, 153, 0.3),
+                rgba(219, 39, 119, 0.3)
+            );
+        }
+        
+        .orange-card {
+            background: linear-gradient(135deg, 
+                rgba(249, 115, 22, 0.3),
+                rgba(234, 88, 12, 0.3)
+            );
+        }
+        
+        .cyan-card {
+            background: linear-gradient(135deg, 
+                rgba(6, 182, 212, 0.3),
+                rgba(8, 145, 178, 0.3)
+            );
+        }
+        
+        .achievement-icon {
+            font-size: 60px;
+            margin-bottom: 15px;
+            filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.2));
+        }
+        
+        .achievement-progress {
+            width: 100%;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+        
+        .achievement-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10B981, #059669);
+            border-radius: 10px;
+            transition: width 1s ease;
+        }
+        
+        .achievement-title {
+            color: white;
+            font-size: 16px;
+            font-weight: 700;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        }
+        
+        .locked-achievement {
+            opacity: 0.5;
+        }
+        
+        .lock-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 48px;
+            filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.3));
+        }
+        
+        /* ===== PANEL LATERAL ===== */
+        .side-panel {
+            position: fixed;
+            top: 0;
+            right: -450px;
+            width: 450px;
+            height: 100vh;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: -4px 0 20px rgba(0, 0, 0, 0.3);
+            z-index: 2000;
+            transition: right 0.4s ease;
+            overflow-y: auto;
+        }
+        
+        .side-panel.open {
+            right: 0;
+        }
+        
+        .panel-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 25px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .panel-close-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+            font-size: 24px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .panel-close-btn:hover {
+            background: rgba(255, 255, 255, 0.5);
+            transform: scale(1.1);
+        }
+        
+        .panel-title {
+            flex: 1;
+            color: white;
+            font-size: 22px;
+            font-weight: 700;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        }
+        
+        .panel-progress {
+            background: rgba(255, 255, 255, 0.3);
+            padding: 8px 15px;
+            border-radius: 15px;
+            color: white;
+            font-weight: 700;
+            font-size: 14px;
+        }
+        
+        .panel-content {
+            padding: 20px;
+        }
+        
+        .place-item {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .place-item:hover {
+            transform: translateX(-5px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .place-item.unlocked {
+            background: linear-gradient(135deg, #D1FAE5, #A7F3D0);
+        }
+        
+        .place-item.locked {
+            background: #F3F4F6;
+            opacity: 0.7;
+        }
+        
+        .place-icon-large {
+            font-size: 48px;
+            filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.1));
+        }
+        
+        .place-details {
+            flex: 1;
+        }
+        
+        .place-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1F2937;
+            margin-bottom: 5px;
+        }
+        
+        .place-status {
+            font-size: 14px;
+            color: #6B7280;
+        }
+        
+        .place-status.unlocked-text {
+            color: #059669;
+            font-weight: 600;
+        }
+        
+        .place-lock {
+            font-size: 32px;
+        }
+        
+        /* Overlay oscuro */
+        .panel-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1500;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+        
+        .panel-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        /* ===== BOTTOM NAVIGATION ===== */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 2px solid rgba(255, 255, 255, 0.3);
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 20px;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+        
+        .nav-btn {
+            background: none;
+            border: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 8px 16px;
+            border-radius: 15px;
+        }
+        
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .nav-btn.active {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .nav-icon {
+            font-size: 24px;
+            filter: grayscale(0.5);
+            transition: all 0.3s ease;
+        }
+        
+        .nav-btn.active .nav-icon {
+            filter: grayscale(0);
+            transform: scale(1.1);
+        }
+        
+        .nav-label {
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .side-panel {
+                width: 90%;
+                right: -90%;
+            }
+            
+            .achievements-section {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .passport-title {
+                font-size: 22px;
+            }
+            
+            .side-panel {
+                width: 100%;
+                right: -100%;
+            }
+            
+            .achievements-section {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- Fondo con gradiente -->
+    <div class="background-gradient"></div>
+    
+    <!-- Contenedor principal -->
+    <div class="passport-container">
+        
+        <!-- ===== HEADER ===== -->
+        <header class="header">
+            <div class="passport-icon">🗺️</div>
+            <div class="header-content">
+                <h1 class="passport-title">PASAPORTE DIGITAL</h1>
+            </div>
+            <button class="close-btn" title="Volver">✕</button>
+        </header>
+        
+        <!-- ===== MAPA DE MÉXICO ===== -->
+        <section class="map-section">
+            
+            <!-- Contenedor del mapa SVG -->
+            <div class="map-container" id="mexicoMap">
+                
+                <!-- El mapa SVG REAL se cargará aquí dinámicamente -->
+                
+            </div>
+            
+            <!-- Leyenda del mapa -->
+            <div class="map-legend">
+                <div class="legend-item">
+                    <div class="legend-color locked-color"></div>
+                    <span>Bloqueado</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color partial-color"></div>
+                    <span>Parcial</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color completed-color"></div>
+                    <span>Completo</span>
+                </div>
+            </div>
+            
+        </section>
+        
+        <!-- ===== LOGROS ===== -->
+        <section class="achievements-section">
+            
+            <div class="achievement-card blue-card unlocked">
+                <div class="achievement-icon">🏆</div>
+                <div class="achievement-progress">
+                    <div class="achievement-progress-fill" style="width: 80%"></div>
+                </div>
+                <h3 class="achievement-title">PYRAMID EXPLORER</h3>
+            </div>
+            
+            <div class="achievement-card pink-card unlocked">
+                <div class="achievement-icon">🌮</div>
+                <div class="achievement-progress">
+                    <div class="achievement-progress-fill" style="width: 60%"></div>
+                </div>
+                <h3 class="achievement-title">FOOD FANATIC</h3>
+            </div>
+            
+            <div class="achievement-card orange-card unlocked">
+                <div class="achievement-icon">📷</div>
+                <div class="achievement-progress">
+                    <div class="achievement-progress-fill" style="width: 45%"></div>
+                </div>
+                <h3 class="achievement-title">PHOTO MASTER</h3>
+            </div>
+            
+            <div class="achievement-card cyan-card locked-achievement">
+                <div class="achievement-icon">🎊</div>
+                <div class="achievement-progress">
+                    <div class="achievement-progress-fill" style="width: 20%"></div>
+                </div>
+                <h3 class="achievement-title">FIESTA STAR</h3>
+                <div class="lock-overlay">🔒</div>
+            </div>
+            
+        </section>
+        
+    </div>
+    
+    <!-- ===== PANEL LATERAL DE LUGARES ===== -->
+    <div class="side-panel" id="sidePanel">
+        <div class="panel-header">
+            <button class="panel-close-btn" id="closePanelBtn">←</button>
+            <h2 class="panel-title" id="panelTitle">Estado</h2>
+            <div class="panel-progress" id="panelProgress">0/0</div>
+        </div>
+        
+        <div class="panel-content" id="panelContent">
+            <!-- Los lugares se cargarán dinámicamente aquí -->
+        </div>
+    </div>
+    
+    <!-- Overlay oscuro cuando el panel está abierto -->
+    <div class="panel-overlay" id="panelOverlay"></div>
+    
+    <!-- ===== BOTTOM NAVIGATION ===== -->
+    <nav class="bottom-nav">
+        <button class="nav-btn">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-label">Inicio</span>
+        </button>
+        <button class="nav-btn">
+            <span class="nav-icon">📷</span>
+            <span class="nav-label">Escanear</span>
+        </button>
+        <button class="nav-btn active">
+            <span class="nav-icon">🗺️</span>
+            <span class="nav-label">Pasaporte</span>
+        </button>
+        <button class="nav-btn">
+            <span class="nav-icon">👤</span>
+            <span class="nav-label">Perfil</span>
+        </button>
+    </nav>
+    
+    <!-- JavaScript FASE 3 -->
+    <script>
+        // ===== DATOS DE LUGARES POR ESTADO =====
+        const statesData = {
+            'baja-california': {
+                name: 'Baja California',
+                places: [
+                    { id: 1, name: 'Ensenada', icon: '🏖️', unlocked: true },
+                    { id: 2, name: 'La Bufadora', icon: '🌊', unlocked: true },
+                    { id: 3, name: 'Valle de Guadalupe', icon: '🍷', unlocked: true }
+                ]
+            },
+            'baja-california-sur': {
+                name: 'Baja California Sur',
+                places: [
+                    { id: 4, name: 'La Paz', icon: '🏝️', unlocked: true },
+                    { id: 5, name: 'Cabo San Lucas', icon: '🐋', unlocked: true }
+                ]
+            },
+            'sonora': {
+                name: 'Sonora',
+                places: [
+                    { id: 6, name: 'Hermosillo', icon: '🏙️', unlocked: true },
+                    { id: 7, name: 'Puerto Peñasco', icon: '🦀', unlocked: true },
+                    { id: 8, name: 'Álamos', icon: '🏛️', unlocked: true },
+                    { id: 9, name: 'Bahía de Kino', icon: '🏝️', unlocked: true }
+                ]
+            },
+            'chihuahua': {
+                name: 'Chihuahua',
+                places: [
+                    { id: 10, name: 'Barrancas del Cobre', icon: '⛰️', unlocked: true },
+                    { id: 11, name: 'Chihuahua Capital', icon: '🏛️', unlocked: true }
+                ]
+            },
+            'coahuila': {
+                name: 'Coahuila',
+                places: [
+                    { id: 12, name: 'Saltillo', icon: '🏙️', unlocked: false },
+                    { id: 13, name: 'Cuatro Ciénegas', icon: '💧', unlocked: false },
+                    { id: 14, name: 'Parras', icon: '🍷', unlocked: false }
+                ]
+            },
+            'nuevo-leon': {
+                name: 'Nuevo León',
+                places: [
+                    { id: 15, name: 'Monterrey', icon: '🏙️', unlocked: false },
+                    { id: 16, name: 'Grutas de García', icon: '🗻', unlocked: false }
+                ]
+            },
+            'tamaulipas': {
+                name: 'Tamaulipas',
+                places: [
+                    { id: 17, name: 'Tampico', icon: '⚓', unlocked: false },
+                    { id: 18, name: 'Ciudad Victoria', icon: '🏙️', unlocked: false },
+                    { id: 19, name: 'Playa Miramar', icon: '🏖️', unlocked: false },
+                    { id: 20, name: 'Matamoros', icon: '🌉', unlocked: false }
+                ]
+            },
+            'jalisco': {
+                name: 'Jalisco',
+                places: [
+                    { id: 21, name: 'Guadalajara', icon: '🎊', unlocked: true },
+                    { id: 22, name: 'Tequila', icon: '🥃', unlocked: true },
+                    { id: 23, name: 'Puerto Vallarta', icon: '🏖️', unlocked: false },
+                    { id: 24, name: 'Chapala', icon: '🌅', unlocked: false },
+                    { id: 25, name: 'Tlaquepaque', icon: '🎨', unlocked: false }
+                ]
+            },
+            'guanajuato': {
+                name: 'Guanajuato',
+                places: [
+                    { id: 26, name: 'Guanajuato Capital', icon: '🎨', unlocked: false },
+                    { id: 27, name: 'San Miguel de Allende', icon: '🏛️', unlocked: false },
+                    { id: 28, name: 'León', icon: '👞', unlocked: false },
+                    { id: 29, name: 'Dolores Hidalgo', icon: '🔔', unlocked: false }
+                ]
+            },
+            'michoacan': {
+                name: 'Michoacán',
+                places: [
+                    { id: 30, name: 'Morelia', icon: '🏛️', unlocked: false },
+                    { id: 31, name: 'Pátzcuaro', icon: '🦋', unlocked: false },
+                    { id: 32, name: 'Uruapan', icon: '🌳', unlocked: false },
+                    { id: 33, name: 'Monarch Sanctuary', icon: '🦋', unlocked: false },
+                    { id: 34, name: 'Tzintzuntzan', icon: '🗿', unlocked: false }
+                ]
+            },
+            'mexico': {
+                name: 'Estado de México',
+                places: [
+                    { id: 35, name: 'Teotihuacán', icon: '🏛️', unlocked: true },
+                    { id: 36, name: 'Valle de Bravo', icon: '⛵', unlocked: false },
+                    { id: 37, name: 'Malinalco', icon: '🗿', unlocked: false },
+                    { id: 38, name: 'Metepec', icon: '🎨', unlocked: false },
+                    { id: 39, name: 'Ixtapan de la Sal', icon: '♨️', unlocked: false },
+                    { id: 40, name: 'Toluca', icon: '🏙️', unlocked: false }
+                ]
+            },
+            'cdmx': {
+                name: 'CDMX',
+                places: [
+                    { id: 41, name: 'Zócalo', icon: '🏛️', unlocked: true },
+                    { id: 42, name: 'Chapultepec', icon: '🌳', unlocked: true },
+                    { id: 43, name: 'Xochimilco', icon: '🚤', unlocked: true },
+                    { id: 44, name: 'Coyoacán', icon: '🎨', unlocked: false },
+                    { id: 45, name: 'Reforma', icon: '🏙️', unlocked: false },
+                    { id: 46, name: 'Frida Kahlo Museum', icon: '🖼️', unlocked: false },
+                    { id: 47, name: 'Templo Mayor', icon: '🏛️', unlocked: false },
+                    { id: 48, name: 'Bellas Artes', icon: '🎭', unlocked: false }
+                ]
+            },
+            'puebla': {
+                name: 'Puebla',
+                places: [
+                    { id: 49, name: 'Puebla Capital', icon: '🏛️', unlocked: false },
+                    { id: 50, name: 'Cholula', icon: '⛰️', unlocked: false },
+                    { id: 51, name: 'Africam Safari', icon: '🦁', unlocked: false },
+                    { id: 52, name: 'Cuetzalan', icon: '💧', unlocked: false },
+                    { id: 53, name: 'Atlixco', icon: '🌺', unlocked: false },
+                    { id: 54, name: 'Zacatlán', icon: '🍎', unlocked: false }
+                ]
+            },
+            'guerrero': {
+                name: 'Guerrero',
+                places: [
+                    { id: 55, name: 'Acapulco', icon: '🏖️', unlocked: false },
+                    { id: 56, name: 'Taxco', icon: '⛏️', unlocked: false },
+                    { id: 57, name: 'Ixtapa-Zihuatanejo', icon: '🌴', unlocked: false },
+                    { id: 58, name: 'Grutas de Cacahuamilpa', icon: '🗻', unlocked: false }
+                ]
+            },
+            'oaxaca': {
+                name: 'Oaxaca',
+                places: [
+                    { id: 59, name: 'Monte Albán', icon: '🏛️', unlocked: true },
+                    { id: 60, name: 'Hierve el Agua', icon: '💧', unlocked: true },
+                    { id: 61, name: 'Oaxaca Centro', icon: '🏙️', unlocked: false },
+                    { id: 62, name: 'Puerto Escondido', icon: '🏄', unlocked: false },
+                    { id: 63, name: 'Mazunte', icon: '🐢', unlocked: false },
+                    { id: 64, name: 'Mitla', icon: '🗿', unlocked: false },
+                    { id: 65, name: 'Tule', icon: '🌳', unlocked: false }
+                ]
+            },
+            'veracruz': {
+                name: 'Veracruz',
+                places: [
+                    { id: 66, name: 'Veracruz Puerto', icon: '⚓', unlocked: false },
+                    { id: 67, name: 'Xalapa', icon: '🌺', unlocked: false },
+                    { id: 68, name: 'Tajín', icon: '🏛️', unlocked: false },
+                    { id: 69, name: 'Catemaco', icon: '🧙', unlocked: false },
+                    { id: 70, name: 'Xico', icon: '💧', unlocked: false },
+                    { id: 71, name: 'Coatepec', icon: '☕', unlocked: false }
+                ]
+            },
+            'tabasco': {
+                name: 'Tabasco',
+                places: [
+                    { id: 72, name: 'Villahermosa', icon: '🏙️', unlocked: false },
+                    { id: 73, name: 'Comalcalco', icon: '🏛️', unlocked: false },
+                    { id: 74, name: 'Parque La Venta', icon: '🗿', unlocked: false },
+                    { id: 75, name: 'Agua Selva', icon: '💧', unlocked: false }
+                ]
+            },
+            'chiapas': {
+                name: 'Chiapas',
+                places: [
+                    { id: 76, name: 'Palenque', icon: '🏛️', unlocked: false },
+                    { id: 77, name: 'San Cristóbal', icon: '🏘️', unlocked: false },
+                    { id: 78, name: 'Cañón del Sumidero', icon: '⛰️', unlocked: false },
+                    { id: 79, name: 'Agua Azul', icon: '💧', unlocked: false },
+                    { id: 80, name: 'Bonampak', icon: '🗿', unlocked: false }
+                ]
+            },
+            'campeche': {
+                name: 'Campeche',
+                places: [
+                    { id: 81, name: 'Campeche Capital', icon: '🏛️', unlocked: false },
+                    { id: 82, name: 'Edzná', icon: '🗿', unlocked: false },
+                    { id: 83, name: 'Calakmul', icon: '🦜', unlocked: false }
+                ]
+            },
+            'yucatan': {
+                name: 'Yucatán',
+                places: [
+                    { id: 84, name: 'Mérida', icon: '🏛️', unlocked: false },
+                    { id: 85, name: 'Chichén Itzá', icon: '🗿', unlocked: false },
+                    { id: 86, name: 'Uxmal', icon: '🏛️', unlocked: false },
+                    { id: 87, name: 'Progreso', icon: '🏖️', unlocked: false },
+                    { id: 88, name: 'Celestún', icon: '🦩', unlocked: false }
+                ]
+            },
+            'quintana-roo': {
+                name: 'Quintana Roo',
+                places: [
+                    { id: 89, name: 'Cancún', icon: '🏖️', unlocked: false },
+                    { id: 90, name: 'Playa del Carmen', icon: '🌴', unlocked: false },
+                    { id: 91, name: 'Tulum', icon: '🏛️', unlocked: false },
+                    { id: 92, name: 'Cozumel', icon: '🐠', unlocked: false },
+                    { id: 93, name: 'Isla Mujeres', icon: '🏝️', unlocked: false },
+                    { id: 94, name: 'Bacalar', icon: '💙', unlocked: false },
+                    { id: 95, name: 'Cobá', icon: '🗿', unlocked: false }
+                ]
+            }
+        };
+        
+        // Esperar a que el DOM esté completamente cargado
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // ===== MAPA DE ESTADOS - MAPEO DE IDs DEL SVG REAL =====
+        // El SVG real usa IDs como MXSON, MXBCN, etc.
+        // Los mapeamos a nuestros nombres y datos
+        const stateIdMapping = {
+            'MXSON': 'sonora',
+            'MXBCN': 'baja-california',
+            'MXBCS': 'baja-california-sur',
+            'MXCHH': 'chihuahua',
+            'MXCOA': 'coahuila',
+            'MXNLE': 'nuevo-leon',
+            'MXTAM': 'tamaulipas',
+            'MXDUR': 'durango',
+            'MXZAC': 'zacatecas',
+            'MXSLP': 'san-luis-potosi',
+            'MXAGU': 'aguascalientes',
+            'MXNAY': 'nayarit',
+            'MXJAL': 'jalisco',
+            'MXGUA': 'guanajuato',
+            'MXQUE': 'queretaro',
+            'MXHID': 'hidalgo',
+            'MXCOL': 'colima',
+            'MXMIC': 'michoacan',
+            'MXMEX': 'mexico',
+            'MXCMX': 'cdmx',
+            'MXMOR': 'morelos',
+            'MXTLA': 'tlaxcala',
+            'MXPUE': 'puebla',
+            'MXGRO': 'guerrero',
+            'MXOAX': 'oaxaca',
+            'MXVER': 'veracruz',
+            'MXTAB': 'tabasco',
+            'MXCHP': 'chiapas',
+            'MXCAM': 'campeche',
+            'MXYUC': 'yucatan',
+            'MXROO': 'quintana-roo'
+        };
+        
+        // ===== FUNCIÓN PARA CARGAR EL MAPA SVG REAL =====
+        async function loadMexicoMap() {
+            try {
+                // Cargar el SVG desde el archivo externo
+                const response = await fetch('../assets/mx.svg');
+                const svgText = await response.text();
+                
+                // Crear un parser DOM para el SVG
+                const parser = new DOMParser();
+                const svgDoc = parser.parseFromString(svgText, 'image/svg+xml');
+                const svgElement = svgDoc.querySelector('svg');
+                
+                // Configurar el SVG para que se ajuste al contenedor
+                svgElement.setAttribute('class', 'mexico-svg-map');
+                svgElement.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+                svgElement.style.width = '100%';
+                svgElement.style.height = '100%';
+                
+                // Agregar fondo azul tipo océano
+                const oceanBg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                oceanBg.setAttribute('width', '1000');
+                oceanBg.setAttribute('height', '630');
+                oceanBg.setAttribute('fill', '#E0F2FE');
+                oceanBg.setAttribute('opacity', '0.3');
+                svgElement.insertBefore(oceanBg, svgElement.firstChild);
+                
+                // Insertar el SVG en el contenedor
+                const mapContainer = document.getElementById('mexicoMap');
+                mapContainer.innerHTML = '';
+                mapContainer.appendChild(svgElement);
+                
+                // Aplicar estilos y funcionalidad a cada estado
+                applyStateStyles();
+                attachStateEvents();
+                
+                console.log('✅ Mapa de México REAL cargado exitosamente');
+                
+            } catch (error) {
+                console.error('❌ Error al cargar el mapa SVG:', error);
+                showNotification('⚠️ Error al cargar el mapa');
+            }
+        }
+        
+        // ===== APLICAR ESTILOS A LOS ESTADOS =====
+        function applyStateStyles() {
+            // Iterar sobre todos los paths del SVG
+            document.querySelectorAll('#mexicoMap svg path, #mexicoMap svg circle').forEach(element => {
+                const svgId = element.id;
+                const stateKey = stateIdMapping[svgId];
+                
+                if (!stateKey || !statesData[stateKey]) return;
+                
+                const stateData = statesData[stateKey];
+                const totalPlaces = stateData.places.length;
+                const unlockedPlaces = stateData.places.filter(p => p.unlocked).length;
+                
+                // Agregar clase base de estado
+                element.classList.add('state');
+                
+                // Determinar el estado: completed, partial, locked
+                let stateClass = 'locked';
+                let fillColor = '#6B7280'; // Gris por defecto
+                
+                if (unlockedPlaces === totalPlaces && totalPlaces > 0) {
+                    // Todos los lugares desbloqueados
+                    stateClass = 'completed';
+                    fillColor = '#10B981'; // Verde
+                } else if (unlockedPlaces > 0) {
+                    // Algunos lugares desbloqueados
+                    stateClass = 'partial';
+                    fillColor = '#F59E0B'; // Dorado
+                } else {
+                    // Ningún lugar desbloqueado
+                    fillColor = '#6B7280'; // Gris
+                }
+                
+                element.classList.add(stateClass);
+                element.setAttribute('fill', fillColor);
+                element.setAttribute('data-state-key', stateKey);
+                element.setAttribute('data-state-name', stateData.name);
+                element.setAttribute('data-unlocked', unlockedPlaces);
+                element.setAttribute('data-total', totalPlaces);
+                
+                // Configurar stroke (borde blanco)
+                element.setAttribute('stroke', '#ffffff');
+                element.setAttribute('stroke-width', '0.5');
+                element.setAttribute('stroke-linejoin', 'round');
+                element.setAttribute('stroke-linecap', 'round');
+                
+                // Para estados bloqueados, aplicar opacidad
+                if (stateClass === 'locked') {
+                    element.style.opacity = '0.6';
+                } else {
+                    element.style.opacity = '1';
+                }
+            });
+        }
+        
+        // ===== ADJUNTAR EVENTOS A LOS ESTADOS =====
+        function attachStateEvents() {
+            document.querySelectorAll('#mexicoMap svg path, #mexicoMap svg circle').forEach(element => {
+                const stateKey = element.getAttribute('data-state-key');
+                
+                if (!stateKey) return;
+                
+                // Hover effect
+                element.addEventListener('mouseenter', function() {
+                    this.style.filter = 'brightness(1.2)';
+                    this.style.cursor = 'pointer';
+                });
+                
+                element.addEventListener('mouseleave', function() {
+                    this.style.filter = 'brightness(1)';
+                });
+                
+                // Click event
+                element.addEventListener('click', function() {
+                    const stateName = this.getAttribute('data-state-name');
+                    
+                    // Animación de pulso
+                    this.style.animation = 'statePulse 0.6s ease';
+                    setTimeout(() => {
+                        this.style.animation = '';
+                    }, 600);
+                    
+                    // Abrir panel lateral con los lugares del estado
+                    openSidePanel(stateKey);
+                });
+            });
+        }
+            // ===== ELEMENTOS DEL DOM =====
+            const sidePanel = document.getElementById('sidePanel');
+            const panelOverlay = document.getElementById('panelOverlay');
+            const closePanelBtn = document.getElementById('closePanelBtn');
+            const closeBtn = document.querySelector('.close-btn');
+            const navBtns = document.querySelectorAll('.nav-btn');
+            const xpFill = document.querySelector('.xp-fill');
+            
+            // ===== INICIALIZACIÓN =====
+            initializeMap();
+            animateXPBar();
+            
+            // ===== FUNCIÓN PARA INICIALIZAR EL MAPA =====
+            async function initializeMap() {
+                // 1. Cargar el mapa SVG REAL desde el archivo externo
+                await loadMexicoMap();
+                
+                // 2. Verificar si hay datos de escaneo en localStorage
+                const scannedPlaces = JSON.parse(localStorage.getItem('scannedPlaces')) || [];
+                
+                // 3. Actualizar estados según lugares escaneados (ya se aplicaron en loadMexicoMap)
+                // No es necesario hacer nada más, applyStateStyles() ya lo hizo
+                
+                console.log('✅ Mapa inicializado con', scannedPlaces.length, 'lugares escaneados');
+            }
+            
+            // ===== FUNCIÓN PARA ACTUALIZAR COLORES DEL MAPA =====
+            // Esta función se llama cuando se desbloquea un nuevo lugar
+            function updateMapColors() {
+                applyStateStyles();
+            }
+            
+            // ===== FUNCIÓN PARA ABRIR PANEL DE ESTADO =====
+            function openSidePanel(stateKey) {
+                const stateInfo = statesData[stateKey];
+                
+                if (!stateInfo) {
+                    showNotification('⚠️ Estado no disponible');
+                    return;
+                }
+                
+                const panelTitle = document.getElementById('panelTitle');
+                const panelProgress = document.getElementById('panelProgress');
+                const panelContent = document.getElementById('panelContent');
+                
+                // Calcular progreso
+                const unlockedCount = stateInfo.places.filter(p => p.unlocked).length;
+                const totalCount = stateInfo.places.length;
+                
+                // Actualizar header
+                panelTitle.textContent = stateInfo.name;
+                panelProgress.textContent = `${unlockedCount}/${totalCount}`;
+                
+                // Limpiar contenido
+                panelContent.innerHTML = '';
+                
+                // Agregar lugares
+                stateInfo.places.forEach(place => {
+                    const placeItem = document.createElement('div');
+                    placeItem.className = `place-item ${place.unlocked ? 'unlocked' : 'locked'}`;
+                    
+                    placeItem.innerHTML = `
+                        <div class="place-icon-large">${place.icon}</div>
+                        <div class="place-details">
+                            <h3 class="place-name">${place.name}</h3>
+                            <p class="place-status ${place.unlocked ? 'unlocked-text' : ''}">
+                                ${place.unlocked ? '✓ Desbloqueado' : '🔒 Escanea para desbloquear'}
+                            </p>
+                        </div>
+                        ${!place.unlocked ? '<div class="place-lock">🔒</div>' : ''}
+                    `;
+                    
+                    // Click en lugar
+                    placeItem.addEventListener('click', () => {
+                        if (place.unlocked) {
+                            showPlaceDetail(place);
+                        } else {
+                            showNotification('Escanea un llavero o postal de este lugar para desbloquearlo');
+                        }
+                    });
+                    
+                    panelContent.appendChild(placeItem);
+                });
+                
+                // Abrir panel
+                sidePanel.classList.add('open');
+                panelOverlay.classList.add('active');
+            }
+            
+            // ===== FUNCIÓN PARA MOSTRAR DETALLE DE LUGAR =====
+            function showPlaceDetail(place) {
+                // Mapear nombres a IDs de lugares en la base de datos educativa
+                const placeMapping = {
+                    'Teotihuacán': 'teotihuacan',
+                    'Guadalajara': 'guadalajara',
+                    'Tequila': 'guadalajara',
+                    'Cancún': 'cancun',
+                    'Zócalo': 'teotihuacan',
+                    'Chapultepec': 'teotihuacan',
+                    'Xochimilco': 'teotihuacan',
+                    'Monte Albán': 'teotihuacan',
+                    'Hierve el Agua': 'teotihuacan',
+                    'Chichén Itzá': 'chichen-itza',
+                    'Mérida': 'chichen-itza'
+                };
+                
+                const placeId = placeMapping[place.name] || 'teotihuacan';
+                
+                // Redirigir a contenido educativo
+                window.location.href = `05-educational-content.html?place=${placeId}`;
+            }
+            
+            // ===== CERRAR PANEL =====
+            function closePanel() {
+                sidePanel.classList.remove('open');
+                panelOverlay.classList.remove('active');
+            }
+            
+            closePanelBtn.addEventListener('click', closePanel);
+            panelOverlay.addEventListener('click', closePanel);
+            
+            // ===== ANIMAR BARRA DE XP =====
+            function animateXPBar() {
+                setTimeout(() => {
+                    const currentXP = parseInt(xpFill.getAttribute('data-xp'));
+                    const maxXP = parseInt(xpFill.getAttribute('data-max'));
+                    const percentage = (currentXP / maxXP) * 100;
+                    xpFill.style.width = `${percentage}%`;
+                }, 500);
+            }
+            
+            // ===== NAVEGACIÓN =====
+            navBtns.forEach((btn, index) => {
+                btn.addEventListener('click', function() {
+                    navBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    switch(index) {
+                        case 0:
+                            window.location.href = '02-dashboard.html';
+                            break;
+                        case 1:
+                            window.location.href = '03-scanner.html';
+                            break;
+                        case 2:
+                            // Ya estamos en Pasaporte
+                            break;
+                        case 3:
+                            window.location.href = '10-perfil.html';
+                            break;
+                    }
+                });
+            });
+            
+            // ===== BOTÓN CERRAR HEADER =====
+            if (closeBtn) {
+                closeBtn.addEventListener('click', function() {
+                    window.location.href = '02-dashboard.html';
+                });
+            }
+            
+            // ===== CLICKS EN LOGROS =====
+            const achievementCards = document.querySelectorAll('.achievement-card');
+            achievementCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    const title = this.querySelector('.achievement-title').textContent;
+                    const isLocked = this.classList.contains('locked-achievement');
+                    
+                    if (isLocked) {
+                        showNotification('🔒 Logro bloqueado. Sigue explorando para desbloquearlo.');
+                    } else {
+                        showNotification(`🏆 Logro: ${title}`);
+                    }
+                });
+            });
+            
+            // ===== FUNCIÓN PARA MOSTRAR NOTIFICACIONES =====
+            function showNotification(message) {
+                const notification = document.createElement('div');
+                notification.textContent = message;
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: rgba(16, 185, 129, 0.95);
+                    color: white;
+                    padding: 15px 25px;
+                    border-radius: 15px;
+                    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+                    font-weight: 600;
+                    z-index: 9999;
+                    max-width: 350px;
+                    animation: slideInRight 0.4s ease;
+                `;
+                
+                document.body.appendChild(notification);
+                
+                const style = document.createElement('style');
+                style.textContent = `
+                    @keyframes slideInRight {
+                        from {
+                            transform: translateX(400px);
+                            opacity: 0;
+                        }
+                        to {
+                            transform: translateX(0);
+                            opacity: 1;
+                        }
+                    }
+                    @keyframes slideOutRight {
+                        from {
+                            transform: translateX(0);
+                            opacity: 1;
+                        }
+                        to {
+                            transform: translateX(400px);
+                            opacity: 0;
+                        }
+                    }
+                `;
+                
+                if (!document.getElementById('notification-styles-passport')) {
+                    style.id = 'notification-styles-passport';
+                    document.head.appendChild(style);
+                }
+                
+                setTimeout(() => {
+                    notification.style.animation = 'slideOutRight 0.4s ease';
+                    setTimeout(() => {
+                        notification.remove();
+                    }, 400);
+                }, 3000);
+            }
+            
+            // ===== FUNCIÓN PÚBLICA PARA DESBLOQUEAR LUGARES (llamada desde scanner) =====
+            window.unlockPlace = function(placeId) {
+                // Buscar el lugar en todos los estados
+                for (let stateId in statesData) {
+                    const state = statesData[stateId];
+                    const place = state.places.find(p => p.id === placeId);
+                    
+                    if (place) {
+                        place.unlocked = true;
+                        
+                        // Guardar en localStorage
+                        const scannedPlaces = JSON.parse(localStorage.getItem('scannedPlaces')) || [];
+                        if (!scannedPlaces.includes(placeId)) {
+                            scannedPlaces.push(placeId);
+                            localStorage.setItem('scannedPlaces', JSON.stringify(scannedPlaces));
+                        }
+                        
+                        // Actualizar colores del mapa
+                        updateMapColors();
+                        
+                        // Mostrar notificación
+                        showNotification(`🎉 ¡${place.name} desbloqueado en ${state.name}!`);
+                        
+                        // Animar XP
+                        const currentXP = parseInt(document.getElementById('currentXP').textContent.replace(',', ''));
+                        const newXP = currentXP + 500;
+                        document.getElementById('currentXP').textContent = newXP.toLocaleString();
+                        xpFill.setAttribute('data-xp', newXP);
+                        animateXPBar();
+                        
+                        console.log('Lugar desbloqueado:', place.name);
+                        return true;
+                    }
+                }
+                
+                return false;
+            };
+            
+            // ===== MENSAJE DE BIENVENIDA =====
+            setTimeout(() => {
+                showNotification('🗺️ Explora el mapa y haz click en los estados para ver lugares');
+            }, 800);
+            
+            console.log('Pasaporte Digital cargado correctamente ✅');
+        });
+    </script>
+    
+</body>
+</html>

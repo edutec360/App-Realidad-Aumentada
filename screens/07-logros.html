@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AR México - Logros</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e22ce 100%);
+            color: #fff;
+            padding-bottom: 80px;
+        }
+        
+        /* Header */
+        .header {
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(20px);
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .back-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateX(-5px);
+        }
+        
+        .header-title {
+            font-size: 24px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .total-badge {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: 700;
+            color: #1e3c72;
+        }
+        
+        /* Stats Overview */
+        .stats-overview {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            animation: fadeIn 0.6s ease backwards;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .stat-icon {
+            font-size: 50px;
+            margin-bottom: 10px;
+        }
+        
+        .stat-value {
+            font-size: 32px;
+            font-weight: 900;
+            color: #FFD700;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        /* Categories */
+        .categories-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .category-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            animation: slideUp 0.8s ease backwards;
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .category-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .category-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .category-icon {
+            font-size: 40px;
+        }
+        
+        .category-name {
+            font-size: 24px;
+            font-weight: 800;
+        }
+        
+        .category-progress {
+            text-align: right;
+        }
+        
+        .progress-text {
+            font-size: 20px;
+            font-weight: 700;
+            color: #FFD700;
+        }
+        
+        .progress-bar-container {
+            width: 150px;
+            height: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #FFD700, #FFA500);
+            border-radius: 10px;
+            transition: width 1s ease;
+        }
+        
+        /* Achievements Grid */
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        
+        .achievement-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .achievement-card.unlocked {
+            background: rgba(255, 215, 0, 0.2);
+            border-color: #FFD700;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+        }
+        
+        .achievement-card.locked {
+            opacity: 0.6;
+            filter: grayscale(1);
+        }
+        
+        .achievement-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .achievement-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 24px;
+        }
+        
+        .achievement-icon {
+            font-size: 60px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        
+        .achievement-name {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+        
+        .achievement-description {
+            font-size: 13px;
+            opacity: 0.8;
+            text-align: center;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        
+        .achievement-reward {
+            background: rgba(255, 215, 0, 0.2);
+            border: 1px solid rgba(255, 215, 0, 0.5);
+            padding: 8px 16px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 14px;
+            color: #FFD700;
+        }
+        
+        .achievement-date {
+            text-align: center;
+            font-size: 12px;
+            opacity: 0.6;
+            margin-top: 10px;
+        }
+        
+        /* Bottom Nav */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+            padding: 15px 0;
+            border-top: 2px solid rgba(255, 255, 255, 0.1);
+            z-index: 100;
+        }
+        
+        .nav-btn {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            padding: 10px 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-btn.active {
+            color: #FFD700;
+        }
+        
+        .nav-icon {
+            font-size: 24px;
+        }
+        
+        .nav-label {
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .stats-overview {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .achievements-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .category-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- Header -->
+    <header class="header">
+        <button class="back-btn" onclick="goBack()">← Volver</button>
+        <h1 class="header-title">🏆 Logros</h1>
+        <div class="total-badge" id="totalBadge">0/40</div>
+    </header>
+    
+    <!-- Stats Overview -->
+    <section class="stats-overview">
+        <div class="stat-card" style="animation-delay: 0.1s">
+            <div class="stat-icon">🏆</div>
+            <div class="stat-value" id="totalUnlocked">0</div>
+            <div class="stat-label">Desbloqueados</div>
+        </div>
+        <div class="stat-card" style="animation-delay: 0.2s">
+            <div class="stat-icon">⭐</div>
+            <div class="stat-value" id="totalXP">0</div>
+            <div class="stat-label">XP Total</div>
+        </div>
+        <div class="stat-card" style="animation-delay: 0.3s">
+            <div class="stat-icon">🔥</div>
+            <div class="stat-value" id="streakDays">0</div>
+            <div class="stat-label">Días Racha</div>
+        </div>
+        <div class="stat-card" style="animation-delay: 0.4s">
+            <div class="stat-icon">📊</div>
+            <div class="stat-value" id="completionRate">0%</div>
+            <div class="stat-label">Completado</div>
+        </div>
+    </section>
+    
+    <!-- Categories -->
+    <div class="categories-container" id="categoriesContainer">
+        <!-- Se llenan dinámicamente -->
+    </div>
+    
+    <!-- Bottom Nav -->
+    <nav class="bottom-nav">
+        <button class="nav-btn" onclick="goToDashboard()">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-label">Inicio</span>
+        </button>
+        <button class="nav-btn" onclick="goToScanner()">
+            <span class="nav-icon">📷</span>
+            <span class="nav-label">Escanear</span>
+        </button>
+        <button class="nav-btn" onclick="goToPassport()">
+            <span class="nav-icon">🗺️</span>
+            <span class="nav-label">Pasaporte</span>
+        </button>
+        <button class="nav-btn" onclick="goToProfile()">
+            <span class="nav-icon">👤</span>
+            <span class="nav-label">Perfil</span>
+        </button>
+    </nav>
+    
+    <script>
+        // ===== BASE DE DATOS DE LOGROS =====
+        const achievementCategories = {
+            food: {
+                name: 'Foodie Explorer',
+                icon: '🌮',
+                achievements: [
+                    { id: 'food_1', name: 'Primer Taco', desc: 'Escanea tu primer lugar gastronómico', icon: '🌮', xp: 100, requirement: 1 },
+                    { id: 'food_2', name: 'Gourmet', desc: 'Escanea 5 lugares gastronómicos', icon: '🍽️', xp: 250, requirement: 5 },
+                    { id: 'food_3', name: 'Chef Viajero', desc: 'Escanea 10 lugares gastronómicos', icon: '👨‍🍳', xp: 500, requirement: 10 },
+                    { id: 'food_4', name: 'Crítico Culinario', desc: 'Escanea 20 lugares gastronómicos', icon: '⭐', xp: 1000, requirement: 20 }
+                ]
+            },
+            monuments: {
+                name: 'Guardián del Patrimonio',
+                icon: '🏛️',
+                achievements: [
+                    { id: 'mon_1', name: 'Primera Pirámide', desc: 'Visita tu primera zona arqueológica', icon: '🗿', xp: 100, requirement: 1 },
+                    { id: 'mon_2', name: 'Arqueólogo Junior', desc: 'Visita 5 zonas arqueológicas', icon: '⛏️', xp: 250, requirement: 5 },
+                    { id: 'mon_3', name: 'Maestro UNESCO', desc: 'Visita todos los sitios UNESCO de México', icon: '🌍', xp: 500, requirement: 10 },
+                    { id: 'mon_4', name: 'Guardián Histórico', desc: 'Visita 20 monumentos históricos', icon: '🏺', xp: 1000, requirement: 20 }
+                ]
+            },
+            nature: {
+                name: 'Eco-Aventurero',
+                icon: '🌿',
+                achievements: [
+                    { id: 'nat_1', name: 'Primera Playa', desc: 'Visita tu primer destino natural', icon: '🏖️', xp: 100, requirement: 1 },
+                    { id: 'nat_2', name: 'Amante del Verde', desc: 'Visita 5 parques nacionales', icon: '🌳', xp: 250, requirement: 5 },
+                    { id: 'nat_3', name: 'Explorador Natural', desc: 'Visita 10 áreas naturales protegidas', icon: '🦋', xp: 500, requirement: 10 },
+                    { id: 'nat_4', name: 'Guardián de la Naturaleza', desc: 'Visita 20 espacios naturales', icon: '🌎', xp: 1000, requirement: 20 }
+                ]
+            },
+            culture: {
+                name: 'Embajador Cultural',
+                icon: '🎭',
+                achievements: [
+                    { id: 'cul_1', name: 'Primera Fiesta', desc: 'Asiste a tu primer festival', icon: '🎊', xp: 100, requirement: 1 },
+                    { id: 'cul_2', name: 'Coleccionista Cultural', desc: 'Visita 5 museos', icon: '🖼️', xp: 250, requirement: 5 },
+                    { id: 'cul_3', name: 'Maestro de Tradiciones', desc: 'Participa en 3 festivales regionales', icon: '🎉', xp: 500, requirement: 3 },
+                    { id: 'cul_4', name: 'Embajador UNESCO', desc: 'Visita 10 sitios de patrimonio cultural', icon: '👑', xp: 1000, requirement: 10 }
+                ]
+            },
+            collection: {
+                name: 'Coleccionista Maestro',
+                icon: '📍',
+                achievements: [
+                    { id: 'col_1', name: 'Primer Paso', desc: 'Escanea tu primer lugar', icon: '🎯', xp: 50, requirement: 1 },
+                    { id: 'col_2', name: 'Explorador', desc: 'Escanea 10 lugares', icon: '🗺️', xp: 200, requirement: 10 },
+                    { id: 'col_3', name: 'Viajero Experto', desc: 'Escanea 25 lugares', icon: '✈️', xp: 500, requirement: 25 },
+                    { id: 'col_4', name: 'Maestro Coleccionista', desc: 'Escanea 50 lugares', icon: '👑', xp: 1000, requirement: 50 },
+                    { id: 'col_5', name: 'Leyenda de México', desc: 'Escanea 100 lugares', icon: '🏆', xp: 2500, requirement: 100 }
+                ]
+            },
+            states: {
+                name: 'Conquistador de Estados',
+                icon: '🗺️',
+                achievements: [
+                    { id: 'sta_1', name: 'Primer Estado', desc: 'Completa todos los lugares de 1 estado', icon: '📍', xp: 250, requirement: 1 },
+                    { id: 'sta_2', name: 'Viajero Regional', desc: 'Completa 5 estados', icon: '🚗', xp: 500, requirement: 5 },
+                    { id: 'sta_3', name: 'Nómada Nacional', desc: 'Completa 10 estados', icon: '🚂', xp: 1000, requirement: 10 },
+                    { id: 'sta_4', name: 'Héroe Nacional', desc: 'Completa todos los 32 estados', icon: '🇲🇽', xp: 5000, requirement: 32 }
+                ]
+            }
+        };
+        
+        // ===== CARGAR PROGRESO DEL USUARIO =====
+        function getUserProgress() {
+            const scannedPlaces = JSON.parse(localStorage.getItem('scannedPlaces')) || [];
+            const unlockedAchievements = JSON.parse(localStorage.getItem('unlockedAchievements')) || [];
+            
+            // Simular progreso por categoría basado en lugares escaneados
+            return {
+                food: scannedPlaces.filter(id => [21].includes(id)).length,
+                monuments: scannedPlaces.filter(id => [1, 2].includes(id)).length,
+                nature: scannedPlaces.filter(id => [5, 10].includes(id)).length,
+                culture: scannedPlaces.filter(id => [4, 6, 7].includes(id)).length,
+                collection: scannedPlaces.length,
+                states: 1, // Simplificado
+                unlocked: unlockedAchievements
+            };
+        }
+        
+        // ===== RENDERIZAR CATEGORÍAS =====
+        function renderCategories() {
+            const container = document.getElementById('categoriesContainer');
+            const progress = getUserProgress();
+            
+            let totalAchievements = 0;
+            let totalUnlocked = 0;
+            let totalXP = 0;
+            
+            Object.keys(achievementCategories).forEach((catKey, index) => {
+                const category = achievementCategories[catKey];
+                const userCount = progress[catKey] || 0;
+                
+                // Calcular cuántos logros están desbloqueados
+                const unlockedInCategory = category.achievements.filter(ach => {
+                    const isUnlocked = userCount >= ach.requirement;
+                    if (isUnlocked) {
+                        totalUnlocked++;
+                        totalXP += ach.xp;
+                    }
+                    totalAchievements++;
+                    return isUnlocked;
+                }).length;
+                
+                const progressPercent = (unlockedInCategory / category.achievements.length) * 100;
+                
+                const section = document.createElement('div');
+                section.className = 'category-section';
+                section.style.animationDelay = `${index * 0.1}s`;
+                
+                section.innerHTML = `
+                    <div class="category-header">
+                        <div class="category-title">
+                            <div class="category-icon">${category.icon}</div>
+                            <div class="category-name">${category.name}</div>
+                        </div>
+                        <div class="category-progress">
+                            <div class="progress-text">${unlockedInCategory}/${category.achievements.length}</div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar-fill" style="width: ${progressPercent}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="achievements-grid" id="grid-${catKey}"></div>
+                `;
+                
+                container.appendChild(section);
+                
+                // Renderizar logros de esta categoría
+                const grid = document.getElementById(`grid-${catKey}`);
+                category.achievements.forEach(achievement => {
+                    const isUnlocked = userCount >= achievement.requirement;
+                    
+                    const card = document.createElement('div');
+                    card.className = `achievement-card ${isUnlocked ? 'unlocked' : 'locked'}`;
+                    
+                    card.innerHTML = `
+                        <div class="achievement-badge">${isUnlocked ? '✅' : '🔒'}</div>
+                        <div class="achievement-icon">${achievement.icon}</div>
+                        <div class="achievement-name">${achievement.name}</div>
+                        <div class="achievement-description">${achievement.desc}</div>
+                        <div class="achievement-reward">+${achievement.xp} XP</div>
+                        ${isUnlocked ? `<div class="achievement-date">Desbloqueado recientemente</div>` : `<div class="achievement-date">Progreso: ${userCount}/${achievement.requirement}</div>`}
+                    `;
+                    
+                    grid.appendChild(card);
+                });
+            });
+            
+            // Actualizar estadísticas globales
+            document.getElementById('totalBadge').textContent = `${totalUnlocked}/${totalAchievements}`;
+            document.getElementById('totalUnlocked').textContent = totalUnlocked;
+            document.getElementById('totalXP').textContent = totalXP.toLocaleString();
+            document.getElementById('streakDays').textContent = '7'; // Simulado
+            document.getElementById('completionRate').textContent = Math.round((totalUnlocked / totalAchievements) * 100) + '%';
+        }
+        
+        // ===== INICIALIZACIÓN =====
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+            renderCategories();
+        });
+        
+        // ===== NAVEGACIÓN =====
+        function goBack() {
+            window.location.href = '02-dashboard.html';
+        }
+        
+        function goToDashboard() {
+            window.location.href = '02-dashboard.html';
+        }
+        
+        function goToScanner() {
+            window.location.href = '03-scanner.html';
+        }
+        
+        function goToPassport() {
+            window.location.href = '04-passport.html';
+        }
+        
+        function goToProfile() {
+            alert('Perfil en desarrollo');
+        }
+        
+        function checkAuth() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            if (!isLoggedIn || isLoggedIn !== 'true') {
+                window.location.href = '01-login.html';
+            }
+        }
+    </script>
+</body>
+</html>

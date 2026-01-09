@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AR México - Mi Perfil</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            color: #fff;
+            padding-bottom: 80px;
+        }
+        
+        /* Header */
+        .header {
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(20px);
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .back-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateX(-5px);
+        }
+        
+        .header-title {
+            font-size: 24px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .settings-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .settings-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        /* Container */
+        .profile-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+        
+        /* Profile Header */
+        .profile-header {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 40px;
+            margin-bottom: 30px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .profile-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 150px;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.3), rgba(255, 107, 107, 0.3));
+            z-index: 0;
+        }
+        
+        .profile-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .profile-avatar-large {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 5px solid white;
+            margin: 0 auto 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+        }
+        
+        .profile-name {
+            font-size: 32px;
+            font-weight: 900;
+            margin-bottom: 10px;
+        }
+        
+        .profile-level {
+            display: inline-block;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #1e3c72;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        
+        .profile-stats-row {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 30px;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 32px;
+            font-weight: 900;
+            color: #FFD700;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        /* Progress Section */
+        .progress-section {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .section-title {
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .level-progress {
+            margin-bottom: 30px;
+        }
+        
+        .level-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .current-level {
+            font-size: 18px;
+            font-weight: 700;
+        }
+        
+        .xp-text {
+            font-size: 14px;
+            color: #FFD700;
+        }
+        
+        .progress-bar-container {
+            width: 100%;
+            height: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #FFD700, #FFA500);
+            border-radius: 10px;
+            transition: width 1s ease;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 10px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #1e3c72;
+        }
+        
+        /* Achievements Preview */
+        .achievements-preview {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 15px;
+        }
+        
+        .achievement-badge {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .achievement-badge:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #FFD700;
+        }
+        
+        .achievement-icon {
+            font-size: 40px;
+            margin-bottom: 5px;
+        }
+        
+        .achievement-name {
+            font-size: 11px;
+            font-weight: 700;
+        }
+        
+        /* Activity Grid */
+        .activity-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .activity-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .activity-card:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #FFD700;
+        }
+        
+        .activity-icon {
+            font-size: 30px;
+            margin-bottom: 10px;
+        }
+        
+        .activity-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .activity-subtitle {
+            font-size: 13px;
+            opacity: 0.8;
+        }
+        
+        /* Settings Section */
+        .settings-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .setting-item {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .setting-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #FFD700;
+        }
+        
+        .setting-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .setting-icon {
+            font-size: 24px;
+        }
+        
+        .setting-text h4 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 3px;
+        }
+        
+        .setting-text p {
+            font-size: 13px;
+            opacity: 0.7;
+        }
+        
+        .setting-arrow {
+            font-size: 20px;
+            opacity: 0.5;
+        }
+        
+        /* Bottom Nav */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+            padding: 15px 0;
+            border-top: 2px solid rgba(255, 255, 255, 0.1);
+            z-index: 100;
+        }
+        
+        .nav-btn {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            padding: 10px 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-btn.active {
+            color: #FFD700;
+        }
+        
+        .nav-icon {
+            font-size: 24px;
+        }
+        
+        .nav-label {
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .profile-stats-row {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .achievements-preview {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .activity-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- Header -->
+    <header class="header">
+        <button class="back-btn" onclick="goBack()">← Volver</button>
+        <h1 class="header-title">👤 Mi Perfil</h1>
+        <button class="settings-btn" onclick="openSettings()">⚙️</button>
+    </header>
+    
+    <!-- Profile Container -->
+    <div class="profile-container">
+        
+        <!-- Profile Header -->
+        <div class="profile-header">
+            <div class="profile-bg"></div>
+            <div class="profile-content">
+                <div class="profile-avatar-large" id="profileAvatar">👤</div>
+                <h1 class="profile-name" id="profileName">Usuario</h1>
+                <div class="profile-level" id="profileLevel">Nivel 5 - Viajero</div>
+                
+                <div class="profile-stats-row">
+                    <div class="stat-item">
+                        <div class="stat-value" id="totalPlaces">0</div>
+                        <div class="stat-label">Lugares</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="totalXP">0</div>
+                        <div class="stat-label">XP Total</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="totalAchievements">12</div>
+                        <div class="stat-label">Logros</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="streakDays">7</div>
+                        <div class="stat-label">Días Racha</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Progress Section -->
+        <div class="progress-section">
+            <h2 class="section-title">📊 Tu Progreso</h2>
+            
+            <div class="level-progress">
+                <div class="level-info">
+                    <span class="current-level">Nivel 5</span>
+                    <span class="xp-text" id="xpProgress">2,500 / 5,000 XP</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" id="levelProgressBar" style="width: 50%">50%</div>
+                </div>
+            </div>
+            
+            <h3 class="section-title" style="font-size: 18px; margin-top: 30px;">🏆 Logros Destacados</h3>
+            <div class="achievements-preview" id="achievementsPreview">
+                <!-- Se llenan dinámicamente -->
+            </div>
+        </div>
+        
+        <!-- Activity Section -->
+        <div class="progress-section">
+            <h2 class="section-title">📈 Actividad Reciente</h2>
+            <div class="activity-grid" id="activityGrid">
+                <!-- Se llena dinámicamente -->
+            </div>
+        </div>
+        
+        <!-- Settings Section -->
+        <div class="progress-section">
+            <h2 class="section-title">⚙️ Configuración</h2>
+            <div class="settings-list">
+                <div class="setting-item" onclick="editProfile()">
+                    <div class="setting-info">
+                        <div class="setting-icon">✏️</div>
+                        <div class="setting-text">
+                            <h4>Editar Perfil</h4>
+                            <p>Cambia tu nombre, avatar y bio</p>
+                        </div>
+                    </div>
+                    <div class="setting-arrow">→</div>
+                </div>
+                
+                <div class="setting-item" onclick="viewAchievements()">
+                    <div class="setting-info">
+                        <div class="setting-icon">🏆</div>
+                        <div class="setting-text">
+                            <h4>Logros</h4>
+                            <p>Ver todos tus logros desbloqueados</p>
+                        </div>
+                    </div>
+                    <div class="setting-arrow">→</div>
+                </div>
+                
+                <div class="setting-item" onclick="viewGallery()">
+                    <div class="setting-info">
+                        <div class="setting-icon">📸</div>
+                        <div class="setting-text">
+                            <h4>Mi Galería</h4>
+                            <p>Ver fotos y recuerdos guardados</p>
+                        </div>
+                    </div>
+                    <div class="setting-arrow">→</div>
+                </div>
+                
+                <div class="setting-item" onclick="shareProfile()">
+                    <div class="setting-info">
+                        <div class="setting-icon">🔗</div>
+                        <div class="setting-text">
+                            <h4>Compartir Perfil</h4>
+                            <p>Comparte tu progreso en redes sociales</p>
+                        </div>
+                    </div>
+                    <div class="setting-arrow">→</div>
+                </div>
+                
+                <div class="setting-item" onclick="logout()">
+                    <div class="setting-info">
+                        <div class="setting-icon">🚪</div>
+                        <div class="setting-text">
+                            <h4>Cerrar Sesión</h4>
+                            <p>Salir de tu cuenta</p>
+                        </div>
+                    </div>
+                    <div class="setting-arrow">→</div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    
+    <!-- Bottom Nav -->
+    <nav class="bottom-nav">
+        <button class="nav-btn" onclick="goToDashboard()">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-label">Inicio</span>
+        </button>
+        <button class="nav-btn" onclick="goToScanner()">
+            <span class="nav-icon">📷</span>
+            <span class="nav-label">Escanear</span>
+        </button>
+        <button class="nav-btn" onclick="goToPassport()">
+            <span class="nav-icon">🗺️</span>
+            <span class="nav-label">Pasaporte</span>
+        </button>
+        <button class="nav-btn active">
+            <span class="nav-icon">👤</span>
+            <span class="nav-label">Perfil</span>
+        </button>
+    </nav>
+    
+    <script>
+        // ===== INICIALIZACIÓN =====
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+            loadProfile();
+            renderAchievements();
+            renderActivity();
+
+            
+        });
+        
+        // ===== CARGAR PERFIL =====
+        function loadProfile() {
+            const username = localStorage.getItem('username') || 'Usuario';
+            const scannedPlaces = JSON.parse(localStorage.getItem('scannedPlaces')) || [];
+            const totalXP = calculateTotalXP(scannedPlaces);
+            const level = calculateLevel(totalXP);
+            
+            // Actualizar UI
+            document.getElementById('profileName').textContent = username;
+            document.getElementById('profileAvatar').textContent = username.charAt(0).toUpperCase();
+            document.getElementById('profileLevel').textContent = `Nivel ${level} - ${getLevelTitle(level)}`;
+            document.getElementById('totalPlaces').textContent = scannedPlaces.length;
+            document.getElementById('totalXP').textContent = totalXP.toLocaleString();
+            
+            // Progress bar
+            const currentLevelXP = totalXP % 5000;
+            const progress = (currentLevelXP / 5000) * 100;
+            document.getElementById('xpProgress').textContent = `${currentLevelXP.toLocaleString()} / 5,000 XP`;
+            document.getElementById('levelProgressBar').style.width = `${progress}%`;
+            document.getElementById('levelProgressBar').textContent = `${Math.round(progress)}%`;
+        }
+        
+        // ===== CALCULAR XP TOTAL =====
+        function calculateTotalXP(places) {
+            return places.length * 500; // 500 XP por lugar
+        }
+        
+        // ===== CALCULAR NIVEL =====
+        function calculateLevel(xp) {
+            return Math.floor(xp / 5000) + 1;
+        }
+        
+        // ===== TÍTULO DEL NIVEL =====
+        function getLevelTitle(level) {
+            const titles = {
+                1: 'Novato',
+                2: 'Explorador',
+                3: 'Viajero',
+                4: 'Aventurero',
+                5: 'Experto',
+                6: 'Maestro',
+                7: 'Leyenda'
+            };
+            return titles[Math.min(level, 7)] || 'Leyenda';
+        }
+        
+        // ===== RENDERIZAR LOGROS =====
+        function renderAchievements() {
+            const container = document.getElementById('achievementsPreview');
+            const featured = [
+                { icon: '🏆', name: 'Primer Paso' },
+                { icon: '🗺️', name: 'Explorador' },
+                { icon: '🌮', name: 'Foodie' },
+                { icon: '🏛️', name: 'Historiador' },
+                { icon: '📸', name: 'Fotógrafo' },
+                { icon: '⭐', name: 'Coleccionista' }
+            ];
+            
+            container.innerHTML = '';
+            featured.forEach(achievement => {
+                const badge = document.createElement('div');
+                badge.className = 'achievement-badge';
+                badge.innerHTML = `
+                    <div class="achievement-icon">${achievement.icon}</div>
+                    <div class="achievement-name">${achievement.name}</div>
+                `;
+                badge.onclick = () => viewAchievements();
+                container.appendChild(badge);
+            });
+        }
+        
+        // ===== RENDERIZAR ACTIVIDAD =====
+        function renderActivity() {
+            const grid = document.getElementById('activityGrid');
+            const activities = [
+                { icon: '🗺️', title: 'Lugar Escaneado', subtitle: 'Teotihuacán - Hoy' },
+                { icon: '🏆', title: 'Logro Desbloqueado', subtitle: 'Explorador - Hace 2 días' },
+                { icon: '📸', title: 'Foto Agregada', subtitle: 'Chichén Itzá - Hace 3 días' },
+                { icon: '⭐', title: 'Nivel Alcanzado', subtitle: 'Nivel 5 - Hace 1 semana' }
+            ];
+            
+            grid.innerHTML = '';
+            activities.forEach(activity => {
+                const card = document.createElement('div');
+                card.className = 'activity-card';
+                card.innerHTML = `
+                    <div class="activity-icon">${activity.icon}</div>
+                    <div class="activity-title">${activity.title}</div>
+                    <div class="activity-subtitle">${activity.subtitle}</div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+        
+        // ===== ACCIONES =====
+        function editProfile() {
+            alert('✏️ Editar Perfil\n\nCambia tu nombre, avatar y biografía\n\n(En desarrollo)');
+        }
+        
+        function viewAchievements() {
+            window.location.href = '07-logros.html';
+        }
+        
+        function viewGallery() {
+            window.location.href = '08-galeria-fotos.html';
+        }
+        
+        function shareProfile() {
+            const username = localStorage.getItem('username') || 'Usuario';
+            const places = JSON.parse(localStorage.getItem('scannedPlaces')) || [];
+            alert(`📱 Compartir Perfil\n\n"¡He desbloqueado ${places.length} lugares en AR México! 🗺️✨"\n\n(Funcionalidad de compartir en desarrollo)`);
+        }
+        
+        function openSettings() {
+            alert('⚙️ Configuración\n\n• Notificaciones\n• Privacidad\n• Idioma\n• Tema\n• Ayuda\n\n(Panel de configuración en desarrollo)');
+        }
+        
+        function logout() {
+            if (confirm('🚪 ¿Estás seguro que deseas cerrar sesión?')) {
+                localStorage.removeItem('isLoggedIn');
+                localStorage.removeItem('username');
+                window.location.href = '01-login.html';
+            }
+        }
+        
+        // ===== NAVEGACIÓN =====
+        function goBack() {
+            window.location.href = '02-dashboard.html';
+        }
+        
+        function goToDashboard() {
+            window.location.href = '02-dashboard.html';
+        }
+        
+        function goToScanner() {
+            window.location.href = '03-scanner.html';
+        }
+        
+        function goToPassport() {
+            window.location.href = '04-passport.html';
+        }
+        
+        function checkAuth() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            if (!isLoggedIn || isLoggedIn !== 'true') {
+                window.location.href = '01-login.html';
+            }
+        }
+    </script>
+</body>
+</html>

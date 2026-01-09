@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camara Full Color</title>
+    <style>
+        /* --- CSS: Estilos y Animaciones --- */
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            /* ANIMACIÓN DE FONDO */
+            /* Los 4 colores aproximados de tu imagen: Salmón, Verde Oliva, Turquesa, Mostaza */
+            background: linear-gradient(-45deg, #df8484, #b4c772, #5acabb, #dac35e);
+            background-size: 400% 400%;
+            animation: gradientAnim 10s ease infinite;
+        }
+
+        @keyframes gradientAnim {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Contenedor invisible (sin marco ni fondo) */
+        .container {
+            text-align: center;
+            width: 95%;
+            max-width: 1200px;
+            /* Se eliminó background, padding y shadow para quitar el "marco" */
+        }
+
+        /* El video ahora es el protagonista */
+        #videoElement {
+            width: 100%;
+            height: auto;
+            max-height: 70vh; /* Ocupa hasta el 80% de la altura de la pantalla */
+            background-color: rgba(0, 0, 0, 0.2); /* Fondo sutil mientras carga */
+            border-radius: 20px;
+            transform: scaleX(-1); /* Efecto espejo */
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2); /* Sombra suave solo al video */
+            object-fit: cover;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .controls {
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        button {
+            /* Botones más grandes y semicirculares */
+            padding: 15px 40px;
+            font-size: 18px;
+            border: none;
+            border-radius: 50px; /* Borde completamente redondo */
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        .btn-start {
+            background-color: white;
+            color: #333;
+        }
+        .btn-start:hover {
+            background-color: #f0f0f0;
+            box-shadow: 0 6px 20px rgba(255, 255, 255, 0.4);
+        }
+
+        .btn-stop {
+            background-color: #ff6b6b; /* Rojo suave que combina con el fondo */
+            color: white;
+        }
+        .btn-stop:hover {
+            background-color: #ff5252;
+            box-shadow: 0 6px 20px rgba(255, 82, 82, 0.4);
+        }
+        
+        /* Estado deshabilitado */
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* ===== BOTTOM NAVIGATION ===== */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 2px solid rgba(255, 255, 255, 0.3);
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 20px;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+        
+        .nav-btn {
+            background: none;
+            border: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 8px 16px;
+            border-radius: 15px;
+        }
+        
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .nav-btn.active {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .nav-icon {
+            font-size: 24px;
+            filter: grayscale(0.5);
+            transition: all 0.3s ease;
+        }
+        
+        .nav-btn.active .nav-icon {
+            filter: grayscale(0);
+            transform: scale(1.1);
+        }
+        
+        .nav-label {
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .stats-section {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .profile-card {
+                grid-row: span 1;
+            }
+            .tourism-card {
+                grid-row: span 1;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .stats-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .places-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-actions {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            
+            .icon-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 18px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .dashboard-title {
+                font-size: 22px;
+            }
+            
+            .section-title {
+                font-size: 20px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <video id="videoElement" autoplay playsinline muted></video>
+        
+        <div class="controls">
+            <button id="startBtn" class="btn-start">Activar Cámara</button>
+            <button id="stopBtn" class="btn-stop" disabled>Apagar</button>
+        </div>
+    </div>
+
+    <!-- ===== BOTTOM NAVIGATION ===== -->
+    <nav class="bottom-nav">
+        <button class="nav-btn active">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-label">Inicio</span>
+        </button>
+        <button class="nav-btn">
+            <span class="nav-icon">📷</span>
+            <span class="nav-label">Escanear</span>
+        </button>
+        <button class="nav-btn">
+            <span class="nav-icon">🗺️</span>
+            <span class="nav-label">Pasaporte</span>
+        </button>
+        <button class="nav-btn">
+            <span class="nav-icon">👤</span>
+            <span class="nav-label">Perfil</span>
+        </button>
+    </nav>
+
+    <script>
+        const video = document.getElementById('videoElement');
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+
+        let stream = null;
+
+        async function startCamera() {
+            try {
+                // Pedimos permiso. Si la página es segura (HTTPS/Localhost),
+                // el navegador recordará la decisión y no mostrará el popup de nuevo en esta sesión.
+                stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { 
+                        width: { ideal: 1280 }, // Intentar Full HD
+                        height: { ideal: 720 } 
+                    } 
+                });
+                
+                video.srcObject = stream;
+                
+                // Actualizar botones
+                startBtn.disabled = true;
+                stopBtn.disabled = false;
+                startBtn.textContent = "Cámara Encendida";
+
+            } catch (err) {
+                console.error("Error:", err);
+                alert("No se pudo iniciar la cámara. Verifica los permisos del navegador.");
+            }
+        }
+
+        function stopCamera() {
+            if (stream) {
+                const tracks = stream.getTracks();
+                // Detenemos los tracks para apagar la luz de la cámara (Hardware OFF)
+                tracks.forEach(track => track.stop());
+                
+                video.srcObject = null;
+                stream = null;
+
+                startBtn.disabled = false;
+                stopBtn.disabled = true;
+                startBtn.textContent = "Activar Cámara";
+            }
+        }
+
+        startBtn.addEventListener('click', startCamera);
+        stopBtn.addEventListener('click', stopCamera);
+
+        // Opcional: Iniciar automáticamente al cargar si ya hay permisos
+        // window.addEventListener('load', startCamera); 
+
+        document.addEventListener('DOMContentLoaded', function() {
+                    const navBtns = document.querySelectorAll('.nav-btn');
+        // ===== NAVEGACIÓN BOTTOM NAV =====
+            navBtns.forEach((btn, index) => {
+                btn.addEventListener('click', function() {
+                    // Remover clase active de todos
+                    navBtns.forEach(b => b.classList.remove('active'));
+                    
+                    // Agregar clase active al clickeado
+                    this.classList.add('active');
+                    
+                    
+                    // Manejar navegación
+                    switch(index) {
+                        case 0:
+                            // Inicio - Ya estamos aquí
+                            console.log('Navegando al Inicio');
+                            window.location.href='02-dashboard.html';
+                            break;
+                        case 1:
+                            // Escanear
+                            console.log('Navegando a Scanner...');
+                            
+                            break;
+                        case 2:
+                            // Pasaporte
+                            console.log('Navegando a Pasaporte...');
+                            window.location.href = '04-passport.html';
+                            break;
+                        case 3:
+                            // Perfil
+                            console.log('Navegando a Perfil...');
+                            window.location.href='10-perfil.html';
+                            break;
+                    }
+                });
+                
+            });
+            console.log('Dashboard cargado correctamente ✅');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AR México - Tienda</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: #fff;
+            padding-bottom: 80px;
+        }
+        
+        /* Header */
+        .header {
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(20px);
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .back-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateX(-5px);
+        }
+        
+        .header-title {
+            font-size: 24px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .cart-btn {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            border: none;
+            color: #1e3c72;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .cart-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ff0000;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 900;
+        }
+        
+        /* Tabs */
+        .tabs-container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+            display: flex;
+            gap: 15px;
+        }
+        
+        .tab-btn {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 15px;
+            border-radius: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-size: 14px;
+        }
+        
+        .tab-btn.active {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            border-color: transparent;
+            color: #1e3c72;
+        }
+        
+        .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        /* Container */
+        .content-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* ===== TIENDA FÍSICA ===== */
+        .map-section {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .map-title {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .map-subtitle {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-bottom: 20px;
+        }
+        
+        .map-placeholder {
+            width: 100%;
+            height: 400px;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.1));
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        
+        .map-pins {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .map-pin {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: #FFD700;
+            border-radius: 50% 50% 50% 0;
+            transform: rotate(-45deg);
+            cursor: pointer;
+            animation: bounce 2s infinite;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .map-pin:hover {
+            transform: rotate(-45deg) scale(1.2);
+            background: #FFA500;
+        }
+        
+        .map-pin::after {
+            content: '🏪';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(45deg);
+            font-size: 18px;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: rotate(-45deg) translateY(0); }
+            50% { transform: rotate(-45deg) translateY(-10px); }
+        }
+        
+        /* Estados Grid */
+        .states-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .state-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .state-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #FFD700;
+        }
+        
+        .state-name {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .state-stores {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-bottom: 10px;
+        }
+        
+        .state-address {
+            font-size: 12px;
+            opacity: 0.7;
+            line-height: 1.5;
+        }
+        
+        /* ===== TIENDA ONLINE ===== */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+        
+        .product-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.4s ease;
+            animation: fadeInUp 0.6s ease backwards;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border-color: #FFD700;
+        }
+        
+        .product-image {
+            width: 100%;
+            height: 220px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 100px;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.1));
+            position: relative;
+        }
+        
+        .product-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #FFD700;
+            color: #1e3c72;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        
+        .product-info {
+            padding: 20px;
+        }
+        
+        .product-name {
+            font-size: 18px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+        
+        .product-description {
+            font-size: 13px;
+            opacity: 0.8;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+        
+        .product-price {
+            font-size: 24px;
+            font-weight: 900;
+            color: #FFD700;
+            margin-bottom: 15px;
+        }
+        
+        .product-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .action-btn {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 13px;
+        }
+        
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .action-btn.primary {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #1e3c72;
+        }
+        
+        /* Bottom Nav */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+            padding: 15px 0;
+            border-top: 2px solid rgba(255, 255, 255, 0.1);
+            z-index: 100;
+        }
+        
+        .nav-btn {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            padding: 10px 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-btn.active {
+            color: #FFD700;
+        }
+        
+        .nav-icon {
+            font-size: 24px;
+        }
+        
+        .nav-label {
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .tabs-container {
+                flex-direction: column;
+            }
+            
+            .products-grid,
+            .states-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .map-placeholder {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- Header -->
+    <header class="header">
+        <button class="back-btn" onclick="goBack()">← Volver</button>
+        <h1 class="header-title">🏪 Tienda</h1>
+        <button class="cart-btn" onclick="viewCart()">
+            🛒 Carrito
+            <span class="cart-badge" id="cartBadge">0</span>
+        </button>
+    </header>
+    
+    <!-- Tabs -->
+    <div class="tabs-container">
+        <button class="tab-btn active" data-tab="physical">
+            📍 Tiendas Físicas
+        </button>
+        <button class="tab-btn" data-tab="online">
+            🛒 Tienda Online
+        </button>
+    </div>
+    
+    <!-- Content -->
+    <div class="content-container">
+        
+        <!-- TAB: Tiendas Físicas -->
+        <div class="tab-content active" id="physical-tab">
+            
+            <!-- Mapa -->
+            <div class="map-section">
+                <h2 class="map-title">
+                    🗺️ Encuentra tu tienda más cercana
+                </h2>
+                <p class="map-subtitle">
+                    Visita nuestras tiendas físicas para comprar postales, llaveros y souvenirs AR
+                </p>
+                <div class="map-placeholder">
+                    🇲🇽
+                    <div class="map-pins" id="mapPins">
+                        <!-- Pins se generan dinámicamente -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Lista de Estados -->
+            <div class="states-grid" id="statesGrid">
+                <!-- Se llenan dinámicamente -->
+            </div>
+            
+        </div>
+        
+        <!-- TAB: Tienda Online -->
+        <div class="tab-content" id="online-tab">
+            <div class="products-grid" id="productsGrid">
+                <!-- Se llenan dinámicamente -->
+            </div>
+        </div>
+        
+    </div>
+    
+    <!-- Bottom Nav -->
+    <nav class="bottom-nav">
+        <button class="nav-btn" onclick="goToDashboard()">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-label">Inicio</span>
+        </button>
+        <button class="nav-btn" onclick="goToScanner()">
+            <span class="nav-icon">📷</span>
+            <span class="nav-label">Escanear</span>
+        </button>
+        <button class="nav-btn" onclick="goToPassport()">
+            <span class="nav-icon">🗺️</span>
+            <span class="nav-label">Pasaporte</span>
+        </button>
+        <button class="nav-btn" onclick="goToProfile()">
+            <span class="nav-icon">👤</span>
+            <span class="nav-label">Perfil</span>
+        </button>
+    </nav>
+    
+    <script>
+        // ===== BASE DE DATOS =====
+        const physicalStores = [
+            { state: 'CDMX', icon: '🏙️', stores: 12, address: 'Centro Histórico, Coyoacán, Polanco, Roma' },
+            { state: 'Jalisco', icon: '🎊', stores: 8, address: 'Guadalajara Centro, Tlaquepaque, Chapala' },
+            { state: 'Yucatán', icon: '🗿', stores: 6, address: 'Mérida, Valladolid, cerca de Chichén Itzá' },
+            { state: 'Quintana Roo', icon: '🏖️', stores: 10, address: 'Cancún, Playa del Carmen, Tulum' },
+            { state: 'Guanajuato', icon: '🎨', stores: 5, address: 'Guanajuato Capital, San Miguel de Allende' },
+            { state: 'Oaxaca', icon: '🎭', stores: 4, address: 'Centro de Oaxaca, Monte Albán' },
+            { state: 'Chiapas', icon: '🌴', stores: 3, address: 'San Cristóbal, Palenque' },
+            { state: 'Puebla', icon: '🏛️', stores: 7, address: 'Puebla Centro, Cholula' },
+            { state: 'Veracruz', icon: '⚓', stores: 6, address: 'Veracruz Puerto, Xalapa' },
+            { state: 'Nuevo León', icon: '🏔️', stores: 9, address: 'Monterrey, San Pedro Garza García' }
+        ];
+        
+        const onlineProducts = [
+            { 
+                id: 1, 
+                name: 'Pack Pirámides', 
+                description: '5 postales AR de zonas arqueológicas mexicanas',
+                icon: '🏛️',
+                price: 299,
+                badge: 'POPULAR',
+                category: 'postales'
+            },
+            { 
+                id: 2, 
+                name: 'Llavero Chichén Itzá', 
+                description: 'Llavero con código AR de Chichén Itzá',
+                icon: '🗿',
+                price: 149,
+                badge: 'NUEVO',
+                category: 'llaveros'
+            },
+            { 
+                id: 3, 
+                name: 'Pack Playas del Caribe', 
+                description: '5 postales AR de playas mexicanas',
+                icon: '🏖️',
+                price: 299,
+                badge: 'POPULAR',
+                category: 'postales'
+            },
+            { 
+                id: 4, 
+                name: 'Colección Cultura', 
+                description: '10 postales de festivales y tradiciones',
+                icon: '🎭',
+                price: 499,
+                badge: 'OFERTA',
+                category: 'postales'
+            },
+            { 
+                id: 5, 
+                name: 'Llavero Guadalajara', 
+                description: 'Llavero con AR de la Catedral',
+                icon: '🎊',
+                price: 149,
+                badge: null,
+                category: 'llaveros'
+            },
+            { 
+                id: 6, 
+                name: 'Pack Gastronomía', 
+                description: '5 postales AR de platillos típicos',
+                icon: '🌮',
+                price: 299,
+                badge: 'NUEVO',
+                category: 'postales'
+            },
+            { 
+                id: 7, 
+                name: 'Colección Estados', 
+                description: '32 postales AR - Una por cada estado',
+                icon: '🗺️',
+                price: 1499,
+                badge: 'BUNDLE',
+                category: 'postales'
+            },
+            { 
+                id: 8, 
+                name: 'Pack Llaveros Premium', 
+                description: '10 llaveros de lugares icónicos',
+                icon: '🔑',
+                price: 999,
+                badge: 'BUNDLE',
+                category: 'llaveros'
+            }
+        ];
+        
+        // ===== VARIABLES GLOBALES =====
+        let cart = [];
+        let currentTab = 'physical';
+        
+        // ===== INICIALIZACIÓN =====
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+            setupTabs();
+            renderPhysicalStores();
+            renderMapPins();
+            renderOnlineProducts();
+            loadCart();
+        });
+        
+        // ===== TABS =====
+        function setupTabs() {
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const targetTab = this.dataset.tab;
+                    
+                    // Actualizar botones
+                    tabBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Actualizar contenido
+                    document.querySelectorAll('.tab-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    document.getElementById(`${targetTab}-tab`).classList.add('active');
+                    
+                    currentTab = targetTab;
+                });
+            });
+        }
+        
+        // ===== RENDERIZAR TIENDAS FÍSICAS =====
+        function renderPhysicalStores() {
+            const grid = document.getElementById('statesGrid');
+            grid.innerHTML = '';
+            
+            physicalStores.forEach((store, index) => {
+                const card = document.createElement('div');
+                card.className = 'state-card';
+                card.style.animationDelay = `${index * 0.1}s`;
+                
+                card.innerHTML = `
+                    <div class="state-name">
+                        <span>${store.icon}</span>
+                        <span>${store.state}</span>
+                    </div>
+                    <div class="state-stores">📍 ${store.stores} tienda${store.stores > 1 ? 's' : ''} disponible${store.stores > 1 ? 's' : ''}</div>
+                    <div class="state-address">${store.address}</div>
+                `;
+                
+                card.onclick = () => showStoreDetails(store);
+                
+                grid.appendChild(card);
+            });
+        }
+        
+        // ===== RENDERIZAR PINS EN MAPA =====
+        function renderMapPins() {
+            const container = document.getElementById('mapPins');
+            const positions = [
+                { top: '45%', left: '30%' },  // CDMX
+                { top: '50%', left: '20%' },  // Jalisco
+                { top: '20%', left: '70%' },  // Yucatán
+                { top: '15%', left: '75%' },  // Quintana Roo
+                { top: '40%', left: '25%' },  // Guanajuato
+                { top: '60%', left: '35%' },  // Oaxaca
+                { top: '70%', left: '40%' },  // Chiapas
+                { top: '42%', left: '32%' },  // Puebla
+                { top: '47%', left: '37%' },  // Veracruz
+                { top: '35%', left: '25%' }   // Nuevo León
+            ];
+            
+            positions.forEach((pos, index) => {
+                const pin = document.createElement('div');
+                pin.className = 'map-pin';
+                pin.style.top = pos.top;
+                pin.style.left = pos.left;
+                pin.style.animationDelay = `${index * 0.2}s`;
+                pin.onclick = () => showStoreDetails(physicalStores[index]);
+                container.appendChild(pin);
+            });
+        }
+        
+        // ===== RENDERIZAR PRODUCTOS ONLINE =====
+        function renderOnlineProducts() {
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = '';
+            
+            onlineProducts.forEach((product, index) => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.style.animationDelay = `${index * 0.1}s`;
+                
+                card.innerHTML = `
+                    <div class="product-image">
+                        ${product.icon}
+                        ${product.badge ? `<div class="product-badge">${product.badge}</div>` : ''}
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-name">${product.name}</h3>
+                        <p class="product-description">${product.description}</p>
+                        <div class="product-price">$${product.price} MXN</div>
+                        <div class="product-actions">
+                            <button class="action-btn" onclick="viewProductDetails(${product.id})">Ver Más</button>
+                            <button class="action-btn primary" onclick="addToCart(${product.id})">Agregar 🛒</button>
+                        </div>
+                    </div>
+                `;
+                
+                grid.appendChild(card);
+            });
+        }
+        
+        // ===== CARRITO =====
+        function loadCart() {
+            cart = JSON.parse(localStorage.getItem('shoppingCart')) || [];
+            updateCartBadge();
+        }
+        
+        function saveCart() {
+            localStorage.setItem('shoppingCart', JSON.stringify(cart));
+            updateCartBadge();
+        }
+        
+        function updateCartBadge() {
+            document.getElementById('cartBadge').textContent = cart.length;
+        }
+        
+        function addToCart(productId) {
+            const product = onlineProducts.find(p => p.id === productId);
+            if (product) {
+                cart.push(product);
+                saveCart();
+                showNotification(`✅ ${product.name} agregado al carrito`);
+            }
+        }
+        
+        function viewCart() {
+            if (cart.length === 0) {
+                alert('🛒 Tu carrito está vacío\n\nAgrega productos de la tienda online');
+                return;
+            }
+            
+            const total = cart.reduce((sum, item) => sum + item.price, 0);
+            const items = cart.map(item => `• ${item.name} - $${item.price}`).join('\n');
+            
+            alert(`🛒 TU CARRITO\n\n${items}\n\n💰 Total: $${total} MXN\n\n(Checkout en desarrollo)`);
+        }
+        
+        // ===== ACCIONES =====
+        function showStoreDetails(store) {
+            alert(`📍 TIENDAS EN ${store.state}\n\n${store.icon} ${store.stores} tiendas disponibles\n\n📍 Ubicaciones:\n${store.address}\n\n(Mapa detallado en desarrollo)`);
+        }
+        
+        function viewProductDetails(productId) {
+            const product = onlineProducts.find(p => p.id === productId);
+            if (product) {
+                alert(`${product.icon} ${product.name}\n\n${product.description}\n\n💰 Precio: $${product.price} MXN\n\n✅ Incluye código AR\n📦 Envío gratis en compras +$500\n\n(Detalles completos en desarrollo)`);
+            }
+        }
+        
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: rgba(16, 185, 129, 0.95);
+                color: white;
+                padding: 15px 25px;
+                border-radius: 15px;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+                font-weight: 600;
+                z-index: 9999;
+                animation: slideInRight 0.4s ease;
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOutRight 0.4s ease';
+                setTimeout(() => notification.remove(), 400);
+            }, 3000);
+        }
+        
+        // ===== NAVEGACIÓN =====
+        function goBack() {
+            window.location.href = '02-dashboard.html';
+        }
+        
+        function goToDashboard() {
+            window.location.href = '02-dashboard.html';
+        }
+        
+        function goToScanner() {
+            window.location.href = '03-scanner.html';
+        }
+        
+        function goToPassport() {
+            window.location.href = '04-passport.html';
+        }
+        
+        function goToProfile() {
+            window.location.href = '10-perfil.html';
+        }
+        
+        function checkAuth() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            if (!isLoggedIn || isLoggedIn !== 'true') {
+                window.location.href = '01-login.html';
+            }
+        }
+    </script>
+</body>
+</html>

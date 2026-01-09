@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AR México - Mis Lugares</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', 'Inter', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            color: #fff;
+            padding-bottom: 80px;
+        }
+        
+        /* Header */
+        .header {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(20px);
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .back-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateX(-5px);
+        }
+        
+        .header-title {
+            font-size: 24px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .stats-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: 700;
+        }
+        
+        /* Filters */
+        .filters-section {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .filter-btn {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-size: 14px;
+            letter-spacing: 1px;
+        }
+        
+        .filter-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .filter-btn.active {
+            background: linear-gradient(135deg, #FF6B6B, #FFD93D);
+            border-color: #FFD93D;
+            box-shadow: 0 0 20px rgba(255, 217, 61, 0.5);
+        }
+        
+        /* Grid de lugares */
+        .places-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .places-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .place-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.4s ease;
+            cursor: pointer;
+            position: relative;
+            animation: fadeInUp 0.6s ease backwards;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .place-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border-color: #FFD93D;
+        }
+        
+        .place-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .place-image::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 3s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .place-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .place-info {
+            padding: 20px;
+        }
+        
+        .place-name {
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+        
+        .place-state {
+            font-size: 14px;
+            color: #FFD93D;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+        
+        .place-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 15px;
+        }
+        
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .place-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .action-btn {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 10px;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 13px;
+        }
+        
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+        
+        .action-btn.primary {
+            background: linear-gradient(135deg, #FF6B6B, #FFD93D);
+        }
+        
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            display: none;
+        }
+        
+        .empty-state.active {
+            display: block;
+        }
+        
+        .empty-icon {
+            font-size: 100px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+        
+        .empty-title {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+        
+        .empty-text {
+            font-size: 16px;
+            opacity: 0.8;
+            margin-bottom: 30px;
+        }
+        
+        .empty-btn {
+            background: linear-gradient(135deg, #FF6B6B, #FFD93D);
+            border: none;
+            color: white;
+            padding: 15px 40px;
+            border-radius: 25px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Bottom Nav */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+            padding: 15px 0;
+            border-top: 2px solid rgba(255, 255, 255, 0.1);
+            z-index: 100;
+        }
+        
+        .nav-btn {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            padding: 10px 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-btn.active {
+            color: #FFD93D;
+        }
+        
+        .nav-icon {
+            font-size: 24px;
+        }
+        
+        .nav-label {
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .places-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .filters-section {
+                justify-content: flex-start;
+                overflow-x: auto;
+                flex-wrap: nowrap;
+                padding: 20px;
+            }
+            
+            .filter-btn {
+                flex-shrink: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- Header -->
+    <header class="header">
+        <button class="back-btn" onclick="goBack()">← Volver</button>
+        <h1 class="header-title">🗺️ Mis Lugares</h1>
+        <div class="stats-badge" id="statsCounter">0/100</div>
+    </header>
+    
+    <!-- Filters -->
+    <section class="filters-section">
+        <button class="filter-btn active" data-filter="all">Todos</button>
+        <button class="filter-btn" data-filter="food">🌮 Comida</button>
+        <button class="filter-btn" data-filter="monument">🏛️ Monumentos</button>
+        <button class="filter-btn" data-filter="nature">🌿 Naturaleza</button>
+        <button class="filter-btn" data-filter="culture">🎭 Cultura</button>
+        <button class="filter-btn" data-filter="beach">🏖️ Playas</button>
+    </section>
+    
+    <!-- Places Grid -->
+    <div class="places-container">
+        <div class="places-grid" id="placesGrid">
+            <!-- Se llenan dinámicamente -->
+        </div>
+        
+        <!-- Empty State -->
+        <div class="empty-state" id="emptyState">
+            <div class="empty-icon">😔</div>
+            <h2 class="empty-title">No has desbloqueado lugares aún</h2>
+            <p class="empty-text">Escanea postales o llaveros para comenzar tu colección</p>
+            <button class="empty-btn" onclick="goToScanner()">IR AL SCANNER</button>
+        </div>
+    </div>
+    
+    <!-- Bottom Nav -->
+    <nav class="bottom-nav">
+        <button class="nav-btn" onclick="goToDashboard()">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-label">Inicio</span>
+        </button>
+        <button class="nav-btn" onclick="goToScanner()">
+            <span class="nav-icon">📷</span>
+            <span class="nav-label">Escanear</span>
+        </button>
+        <button class="nav-btn" onclick="goToPassport()">
+            <span class="nav-icon">🗺️</span>
+            <span class="nav-label">Pasaporte</span>
+        </button>
+        <button class="nav-btn" onclick="goToProfile()">
+            <span class="nav-icon">👤</span>
+            <span class="nav-label">Perfil</span>
+        </button>
+    </nav>
+    
+    <script>
+        // ===== BASE DE DATOS DE LUGARES =====
+        const allPlaces = [
+            { id: 1, name: 'Teotihuacán', state: 'Estado de México', icon: '🏛️', category: 'monument', xp: 500, date: '2024-12-15' },
+            { id: 2, name: 'Chichén Itzá', state: 'Yucatán', icon: '🗿', category: 'monument', xp: 500, date: '2024-12-14' },
+            { id: 3, name: 'Cancún', state: 'Quintana Roo', icon: '🏖️', category: 'beach', xp: 500, date: '2024-12-13' },
+            { id: 4, name: 'Guadalajara', state: 'Jalisco', icon: '🎊', category: 'culture', xp: 500, date: '2024-12-12' },
+            { id: 5, name: 'Palenque', state: 'Chiapas', icon: '🌴', category: 'nature', xp: 500, date: '2024-12-11' },
+            { id: 6, name: 'Guanajuato', state: 'Guanajuato', icon: '🎨', category: 'culture', xp: 500, date: '2024-12-10' },
+            { id: 7, name: 'Oaxaca', state: 'Oaxaca', icon: '🎭', category: 'culture', xp: 500, date: '2024-12-09' },
+            { id: 8, name: 'Puerto Vallarta', state: 'Jalisco', icon: '🌊', category: 'beach', xp: 500, date: '2024-12-08' },
+            { id: 21, name: 'Tequila', state: 'Jalisco', icon: '🥃', category: 'food', xp: 500, date: '2024-12-07' },
+            { id: 10, name: 'Cabo San Lucas', state: 'Baja California Sur', icon: '🐋', category: 'nature', xp: 500, date: '2024-12-06' }
+        ];
+        
+        // ===== VARIABLES GLOBALES =====
+        let unlockedPlaces = [];
+        let currentFilter = 'all';
+        
+        // ===== INICIALIZACIÓN =====
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+            loadUnlockedPlaces();
+            setupFilters();
+            renderPlaces();
+        });
+        
+        // ===== CARGAR LUGARES DESBLOQUEADOS =====
+        function loadUnlockedPlaces() {
+            const scannedIds = JSON.parse(localStorage.getItem('scannedPlaces')) || [];
+            unlockedPlaces = allPlaces.filter(place => scannedIds.includes(place.id));
+            
+            // Actualizar contador
+            document.getElementById('statsCounter').textContent = `${unlockedPlaces.length}/${allPlaces.length}`;
+        }
+        
+        // ===== CONFIGURAR FILTROS =====
+        function setupFilters() {
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Remover active de todos
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    
+                    // Agregar active al clickeado
+                    this.classList.add('active');
+                    
+                    // Actualizar filtro
+                    currentFilter = this.dataset.filter;
+                    
+                    // Re-renderizar
+                    renderPlaces();
+                });
+            });
+        }
+        
+        // ===== RENDERIZAR LUGARES =====
+        function renderPlaces() {
+            const grid = document.getElementById('placesGrid');
+            const emptyState = document.getElementById('emptyState');
+            
+            // Filtrar lugares
+            let filtered = unlockedPlaces;
+            
+            if (currentFilter !== 'all') {
+                filtered = unlockedPlaces.filter(place => place.category === currentFilter);
+            }
+            
+            // Limpiar grid
+            grid.innerHTML = '';
+            
+            // Mostrar empty state si no hay lugares
+            if (filtered.length === 0) {
+                emptyState.classList.add('active');
+                grid.style.display = 'none';
+                return;
+            }
+            
+            emptyState.classList.remove('active');
+            grid.style.display = 'grid';
+            
+            // Renderizar cada lugar
+            filtered.forEach((place, index) => {
+                const card = document.createElement('div');
+                card.className = 'place-card';
+                card.style.animationDelay = `${index * 0.1}s`;
+                
+                card.innerHTML = `
+                    <div class="place-image">
+                        ${place.icon}
+                        <div class="place-badge">${getCategoryName(place.category)}</div>
+                    </div>
+                    <div class="place-info">
+                        <h3 class="place-name">${place.name}</h3>
+                        <p class="place-state">📍 ${place.state}</p>
+                        <div class="place-meta">
+                            <div class="meta-item">
+                                <span>⭐</span>
+                                <span>${place.xp} XP</span>
+                            </div>
+                            <div class="meta-item">
+                                <span>📅</span>
+                                <span>${formatDate(place.date)}</span>
+                            </div>
+                        </div>
+                        <div class="place-actions">
+                            <button class="action-btn" onclick="viewOnMap(${place.id})">Ver en Mapa</button>
+                            <button class="action-btn primary" onclick="viewDetails(${place.id})">Ver Detalles</button>
+                        </div>
+                    </div>
+                `;
+                
+                grid.appendChild(card);
+            });
+        }
+        
+        // ===== HELPERS =====
+        function getCategoryName(category) {
+            const names = {
+                food: 'Comida',
+                monument: 'Monumento',
+                nature: 'Naturaleza',
+                culture: 'Cultura',
+                beach: 'Playa'
+            };
+            return names[category] || 'Otro';
+        }
+        
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
+            
+            if (diffDays === 0) return 'Hoy';
+            if (diffDays === 1) return 'Ayer';
+            if (diffDays < 7) return `Hace ${diffDays} días`;
+            
+            return date.toLocaleDateString('es-MX', { day: 'numeric', month: 'short' });
+        }
+        
+        // ===== ACCIONES =====
+        function viewOnMap(placeId) {
+            localStorage.setItem('highlightPlace', placeId);
+            window.location.href = '04-passport.html';
+        }
+        
+        function viewDetails(placeId) {
+            // Mapeo de IDs a nombres de lugares para el sistema educativo
+            const placeMap = {
+                1: 'teotihuacan',
+                2: 'chichen-itza',
+                3: 'cancun',
+                4: 'guadalajara'
+            };
+            
+            const placeKey = placeMap[placeId];
+            
+            if (placeKey) {
+                window.location.href = `05-educational-content.html?place=${placeKey}`;
+            } else {
+                alert('Contenido educativo en desarrollo para este lugar');
+            }
+        }
+        
+        // ===== NAVEGACIÓN =====
+        function goBack() {
+            window.location.href = '02-dashboard.html';
+        }
+        
+        function goToDashboard() {
+            window.location.href = '02-dashboard.html';
+        }
+        
+        function goToScanner() {
+            window.location.href = '03-scanner.html';
+        }
+        
+        function goToPassport() {
+            window.location.href = '04-passport.html';
+        }
+        
+        function goToProfile() {
+            alert('Perfil en desarrollo');
+        }
+        
+        function checkAuth() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            if (!isLoggedIn || isLoggedIn !== 'true') {
+                window.location.href = '01-login.html';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AR México - Dashboard</title>
+    
+    <!-- CSS FASE 2 -->
+    <style>
+        /* Reset y configuración base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            background: #f0f0f0;
+            overflow-x: hidden;
+            padding-bottom: 80px;
+        }
+        
+        /* Fondo con gradiente */
+        .background-gradient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, 
+                #FFA07A 0%,   /* Coral claro */
+                #FFB6C1 25%,  /* Rosa claro */
+                #FFD700 50%,  /* Dorado */
+                #87CEEB 75%,  /* Azul cielo */
+                #98D8C8 100%  /* Verde menta */
+            );
+            background-size: 400% 400%;
+            animation: gradientShift 20s ease infinite;
+            z-index: -1;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        /* Contenedor principal */
+        .dashboard-container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* ===== HEADER ===== */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            animation: slideDown 0.6s ease-out;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+        
+        .avatar-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .dashboard-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .user-name {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+        }
+        
+        .user-rank {
+            color: #1b9e01;
+            font-weight: 700;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .icon-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .icon-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+        
+        .logout-btn {
+            background: rgba(255, 107, 107, 0.3);
+        }
+        
+        .logout-btn:hover {
+            background: rgba(255, 107, 107, 0.5);
+        }
+        
+        /* ===== SECCIÓN DE ESTADÍSTICAS ===== */
+        .stats-section {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+        
+        /* Card de perfil ocupa 2 filas */
+        .profile-card {
+            grid-row: span 2;
+            min-height: 300px; /* MUCHO más compacto */
+        }
+        
+        /* Card de turismo ocupa 2 filas */
+        .tourism-card {
+            grid-row: span 2;
+            min-height: 300px; /* Más compacto */
+        }
+        
+        .stat-card {
+            position: relative;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 25px;
+            padding: 20px; /* Reducido de 25px */
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.6s ease-out;
+            animation-fill-mode: both;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .stat-card:nth-child(1) { animation-delay: 0.1s; }
+        .stat-card:nth-child(2) { animation-delay: 0.2s; }
+        .stat-card:nth-child(3) { animation-delay: 0.3s; }
+        .stat-card:nth-child(4) { animation-delay: 0.4s; }
+        .stat-card:nth-child(5) { animation-delay: 0.5s; }
+        .stat-card:nth-child(6) { animation-delay: 0.6s; }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .card-badge {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 18px;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Card específico de perfil */
+        .profile-card {
+            background: linear-gradient(135deg, 
+                rgba(255, 105, 180, 0.5),
+                rgba(255, 20, 147, 0.5)
+            );
+        }
+        
+        .profile-avatar-large {
+            width: 90px; /* Reducido de 120px */
+            height: 90px;
+            border-radius: 50%;
+            border: 3px solid white; /* Reducido de 4px */
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            margin: 20px auto 10px; /* Reducido de 30px auto 15px */
+        }
+        
+        .profile-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .profile-name {
+            text-align: center;
+            color: white;
+            font-size: 18px; /* Reducido de 22px */
+            font-weight: 700;
+            margin-bottom: 3px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+        }
+        
+        .profile-score {
+            text-align: center;
+            color: #079b1a;
+            font-size: 24px; /* Reducido de 32px */
+            font-weight: 800;
+            margin-bottom: 10px; /* Reducido de 15px */
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 6px; /* Reducido de 8px */
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 15px; /* Reducido de 20px */
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #FFD700, #FFA500);
+            border-radius: 10px;
+            transition: width 1s ease;
+        }
+        
+        .recent-places {
+            display: flex;
+            flex-direction: column;
+            gap: 8px; /* Reducido de 10px */
+        }
+        
+        .place-item {
+            display: flex;
+            align-items: center;
+            gap: 10px; /* Reducido de 12px */
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px; /* Reducido de 10px */
+            border-radius: 10px; /* Reducido de 12px */
+        }
+        
+        .place-icon {
+            font-size: 20px; /* Reducido de 24px */
+        }
+        
+        .place-info {
+            flex: 1;
+        }
+        
+        .place-name {
+            color: white;
+            font-weight: 600;
+            font-size: 12px; /* Reducido de 14px */
+        }
+        
+        .place-time {
+            color: #ff7300;
+            font-weight: 700;
+            font-size: 12px; /* Reducido de 14px */
+        }
+        
+        /* Cards de estadísticas con colores específicos */
+        .places-card {
+            background: linear-gradient(135deg, 
+                rgba(0, 217, 255, 0.5),
+                rgba(6, 182, 212, 0.5)
+            );
+        }
+        
+        .achievements-card {
+            background: linear-gradient(135deg, 
+                rgba(255, 193, 7, 0.5),
+                rgba(255, 152, 0, 0.5)
+            );
+        }
+        
+        .points-card {
+            background: linear-gradient(135deg, 
+                rgba(255, 138, 101, 0.5),
+                rgba(255, 107, 129, 0.5)
+            );
+        }
+        
+        .collection-card {
+            background: linear-gradient(135deg, 
+                rgba(16, 185, 129, 0.5),
+                rgba(5, 150, 105, 0.5)
+            );
+        }
+        
+        .tourism-card {
+            background: linear-gradient(135deg, 
+                rgba(255, 171, 145, 0.5),
+                rgba(255, 138, 101, 0.5)
+            );
+        }
+        
+        .card-icon {
+            font-size: 45px; /* Reducido de 60px */
+            text-align: center;
+            margin: 15px 0; /* Reducido de 20px 0 */
+            filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.2));
+        }
+        
+        .card-title {
+            color: white;
+            font-size: 16px; /* Reducido de 18px */
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 8px; /* Reducido de 10px */
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        }
+        
+        .card-value {
+            color: white;
+            font-size: 28px; /* Reducido de 32px */
+            font-weight: 800;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .card-subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 12px; /* Reducido de 13px */
+            text-align: center;
+            margin-top: 5px;
+        }
+        
+        .card-star-btn {
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.3);
+            border: none;
+            border-radius: 50%;
+            width: 35px; /* Reducido de 40px */
+            height: 35px;
+            font-size: 18px; /* Reducido de 20px */
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .card-star-btn:hover {
+            background: rgba(255, 255, 255, 0.5);
+            transform: scale(1.1);
+        }
+        
+        .card-footer {
+            display: flex;
+            gap: 8px; /* Reducido de 10px */
+            justify-content: center;
+            margin-top: 12px; /* Reducido de 15px */
+        }
+        
+        .card-footer-btn {
+            background: rgba(255, 255, 255, 0.3);
+            border: none;
+            padding: 6px 12px; /* Reducido de 8px 16px */
+            border-radius: 20px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .card-footer-btn:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+        
+        .store-section {
+            display: flex;
+            gap: 8px; /* Reducido de 10px */
+            align-items: center;
+            margin-top: 12px; /* Reducido de 15px */
+        }
+        
+        .store-btn {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.3);
+            border: none;
+            padding: 10px; /* Reducido de 12px */
+            border-radius: 20px;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .store-btn:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+        
+        .lock-btn {
+            width: 40px; /* Reducido de 45px */
+            height: 40px;
+            background: rgba(255, 255, 255, 0.3);
+            border: none;
+            border-radius: 50%;
+            font-size: 16px; /* Reducido de 18px */
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .lock-btn:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+        
+        /* ===== SECCIÓN DE GALERÍA DE LUGARES ===== */
+        .places-gallery-section {
+            animation: fadeInUp 0.8s ease-out 0.7s;
+            animation-fill-mode: both;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .section-title {
+            color: white;
+            font-size: 24px;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .view-all-link {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+        
+        .view-all-link:hover {
+            color: #FFD700;
+        }
+        
+        .places-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .place-gallery-card {
+            position: relative;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            padding: 20px;
+            min-height: 220px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+        
+        .place-gallery-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: inherit;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .place-gallery-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+        }
+        
+        .place-gallery-card:hover::before {
+            opacity: 0.3;
+        }
+        
+        /* Colores específicos para cada card */
+        .card-pink {
+            background: linear-gradient(135deg, 
+                rgba(255, 105, 180, 0.4),
+                rgba(255, 20, 147, 0.4)
+            );
+        }
+        
+        .card-blue {
+            background: linear-gradient(135deg, 
+                rgba(100, 149, 237, 0.4),
+                rgba(0, 191, 255, 0.4)
+            );
+        }
+        
+        .card-orange {
+            background: linear-gradient(135deg, 
+                rgba(255, 165, 0, 0.4),
+                rgba(255, 140, 0, 0.4)
+            );
+        }
+        
+        .card-purple {
+            background: linear-gradient(135deg, 
+                rgba(147, 112, 219, 0.4),
+                rgba(138, 43, 226, 0.4)
+            );
+        }
+        
+        .card-cyan {
+            background: linear-gradient(135deg, 
+                rgba(0, 206, 209, 0.4),
+                rgba(64, 224, 208, 0.4)
+            );
+        }
+        
+        .card-green {
+            background: linear-gradient(135deg, 
+                rgba(34, 197, 94, 0.4),
+                rgba(22, 163, 74, 0.4)
+            );
+        }
+        
+        .favorite-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.3);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 2;
+        }
+        
+        .favorite-btn:hover {
+            background: rgba(255, 255, 255, 0.5);
+            transform: scale(1.1);
+        }
+        
+        .favorite-btn.active {
+            color: #FF006E;
+        }
+        
+        .place-image {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100px;
+            margin-bottom: 15px;
+        }
+        
+        .place-3d-icon {
+            font-size: 70px;
+            filter: drop-shadow(2px 2px 8px rgba(0, 0, 0, 0.2));
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .place-content {
+            text-align: center;
+        }
+        
+        .place-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.3);
+            padding: 8px 16px;
+            border-radius: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .badge-icon {
+            font-size: 20px;
+        }
+        
+        .place-card-title {
+            color: white;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+        }
+        
+        .place-card-code {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        /* ===== BOTTOM NAVIGATION ===== */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 2px solid rgba(255, 255, 255, 0.3);
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 20px;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+        
+        .nav-btn {
+            background: none;
+            border: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 8px 16px;
+            border-radius: 15px;
+        }
+        
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .nav-btn.active {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .nav-icon {
+            font-size: 24px;
+            filter: grayscale(0.5);
+            transition: all 0.3s ease;
+        }
+        
+        .nav-btn.active .nav-icon {
+            filter: grayscale(0);
+            transform: scale(1.1);
+        }
+        
+        .nav-label {
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .stats-section {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .profile-card {
+                grid-row: span 1;
+            }
+            .tourism-card {
+                grid-row: span 1;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .stats-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .places-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-actions {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            
+            .icon-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 18px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .dashboard-title {
+                font-size: 22px;
+            }
+            
+            .section-title {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- Fondo con gradiente -->
+    <div class="background-gradient"></div>
+    
+    <!-- Contenedor principal -->
+    <div class="dashboard-container">
+        
+        <!-- ===== HEADER ===== -->
+        <header class="header">
+            <div class="user-info">
+                <div class="avatar">
+                    <img src="https://i.pravatar.cc/150?img=12" alt="Usuario" class="avatar-img">
+                </div>
+                <div class="user-text">
+                    <h1 class="dashboard-title">Tu inicio</h1>
+                    <p class="user-name">Darly <span class="user-rank">XP 2066</span></p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="icon-btn" title="Calendario">📅</button>
+                <button class="icon-btn" title="Estadísticas">📊</button>
+                <button class="icon-btn" title="Configuración">⚙️</button>
+                <button class="icon-btn logout-btn" title="Cerrar sesión">🚪</button>
+            </div>
+        </header>
+        
+        <!-- ===== SECCIÓN DE ESTADÍSTICAS (Estilo Imagen 1) ===== -->
+        <section class="stats-section">
+            
+            <!-- Card de Perfil con ranking -->
+            <div class="stat-card profile-card">
+                <div class="card-badge">1</div>
+                <div class="profile-avatar-large">
+                    <img src="https://i.pravatar.cc/150?img=12" alt="Usuario" class="profile-img">
+                </div>
+                <h3 class="profile-name">Darly</h3>
+                <div class="progress-bar">
+                </div>
+                <div class="recent-places">
+                    <div class="place-item">
+                        <span class="place-icon">🏛️</span>
+                        <div class="place-info">
+                            <p class="place-name">LUGAR FAVORITO</p>
+                            <p class="place-time">las vegas</p>
+                        </div>
+                    </div>
+                    <div class="place-item">
+                        <span class="place-icon">🏖️</span>
+                        <div class="place-info">
+                            <p class="place-name">ESTADO:</p>
+                            <p class="place-time">Contento de viajar a nuevos lugares</p>
+                        </div>
+                    </div>
+                    <div class="place-item">
+                        <span class="place-icon">🏜️</span>
+                        <div class="place-info">
+                            <p class="place-name">#VIAJERO</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card de Places -->
+            <div class="stat-card places-card">
+                <div class="card-badge">2</div>
+                <div class="card-icon">🗺️</div>
+                <h3 class="card-title">Lugares</h3>
+                <p class="card-value">1/32</p>
+                <button class="card-star-btn">⭐</button>
+            </div>
+            
+            <!-- Card de Logros -->
+            <div class="stat-card achievements-card">
+                <div class="card-badge">3</div>
+                <div class="card-icon">🏆</div>
+                <h3 class="card-title">Logros</h3>
+                <p class="card-value">12/240</p>
+                <button class="card-star-btn">⭐</button>
+            </div>
+            
+            <!-- Card de Turismo -->
+            <div class="stat-card tourism-card">
+                <div class="card-badge">6</div>
+                <div class="card-icon">🏪</div>
+                <h3 class="card-title">Tienda</h3>
+                <p class="card-value">24K</p>
+                <p class="card-subtitle">Lugares descubiertos</p>
+                <div class="card-footer">
+                    <button class="card-footer-btn">🔄 42</button>
+                    <button class="card-footer-btn">⭐</button>
+                </div>
+                <div class="store-section">
+                </div>
+            </div>
+            
+            <!-- Card de Puntos -->
+            <div class="stat-card points-card">
+                <div class="card-badge">4</div>
+                <div class="card-icon">📚</div>
+                <h3 class="card-title">Contenido educativo</h3>
+                <p class="card-value">45</p>
+                <button class="card-star-btn">⭐</button>
+            </div>
+            
+            <!-- Card de Colección -->
+            <div class="stat-card collection-card">
+                <div class="card-badge">5</div>
+                <div class="card-icon">👑</div>
+                <h3 class="card-title">Colección</h3>
+                <p class="card-value">2/120</p>
+                <button class="card-star-btn">⭐</button>
+            </div>
+            
+        </section>
+        
+        <!-- ===== SECCIÓN DE LUGARES RECIENTES (Estilo Imagen 2) ===== -->
+
+    
+    <!-- ===== BOTTOM NAVIGATION ===== -->
+    <nav class="bottom-nav">
+        <button class="nav-btn active">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-label">Inicio</span>
+        </button>
+        <button class="nav-btn">
+            <span class="nav-icon">📷</span>
+            <span class="nav-label">Escanear</span>
+        </button>
+        <button class="nav-btn">
+            <span class="nav-icon">🗺️</span>
+            <span class="nav-label">Pasaporte</span>
+        </button>
+        <button class="nav-btn">
+            <span class="nav-icon">👤</span>
+            <span class="nav-label">Perfil</span>
+        </button>
+    </nav>
+    
+    <!-- JavaScript FASE 3 -->
+    <script>
+        // Esperar a que el DOM esté completamente cargado
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // ===== ELEMENTOS DEL DOM =====
+            const navBtns = document.querySelectorAll('.nav-btn');
+            const favoriteBtns = document.querySelectorAll('.favorite-btn');
+            const logoutBtn = document.querySelector('.logout-btn');
+            const placeCards = document.querySelectorAll('.place-gallery-card');
+            const progressFill = document.querySelector('.progress-fill');
+            const userNameElement = document.querySelector('.user-name');
+            
+            // ===== CARGAR DATOS DEL USUARIO =====
+            function loadUserData() {
+                const isLoggedIn = localStorage.getItem('isLoggedIn');
+                const username = localStorage.getItem('username');
+                
+                if (!isLoggedIn || isLoggedIn !== 'true') {
+                    // Si no está logueado, redirigir al login
+                    window.location.href = '01-login.html';
+                    return;
+                }
+                
+                // Mostrar nombre del usuario
+                if (username && userNameElement) {
+                    userNameElement.innerHTML = `${username} <span class="user-rank">#2066</span>`;
+                }
+                
+                // Animar barra de progreso
+                setTimeout(() => {
+                    if (progressFill) {
+                        progressFill.style.width = '75%';
+                    }
+                }, 500);
+            }
+            
+            // ===== NAVEGACIÓN BOTTOM NAV =====
+            navBtns.forEach((btn, index) => {
+                btn.addEventListener('click', function() {
+                    // Remover clase active de todos
+                    navBtns.forEach(b => b.classList.remove('active'));
+                    
+                    // Agregar clase active al clickeado
+                    this.classList.add('active');
+                    
+                    // Manejar navegación
+                    switch(index) {
+                        case 0:
+                            // Inicio - Ya estamos aquí
+                            console.log('Ya estás en Inicio');
+                            break;
+                        case 1:
+                            // Escanear
+                            console.log('Navegando a Scanner...');
+                            window.location.href = '03-scanner.html';
+                            break;
+                        case 2:
+                            // Pasaporte
+                            console.log('Navegando a Pasaporte...');
+                            window.location.href = '04-passport.html';
+                            break;
+                        case 3:
+                            // Perfil
+                            console.log('Navegando a Perfil...');
+                            window.location.href='10-perfil.html';
+                            break;
+                    }
+                });
+            });
+            
+            // ===== SISTEMA DE FAVORITOS =====
+            favoriteBtns.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation(); // Evitar que se active el click del card
+                    
+                    // Toggle favorito
+                    if (this.classList.contains('active')) {
+                        this.classList.remove('active');
+                        this.textContent = '♡';
+                        showNotification('Eliminado de favoritos');
+                    } else {
+                        this.classList.add('active');
+                        this.textContent = '♥';
+                        showNotification('Agregado a favoritos ❤️');
+                        
+                        // Animación de pulso
+                        this.style.animation = 'pulse 0.6s ease';
+                        setTimeout(() => {
+                            this.style.animation = '';
+                        }, 600);
+                    }
+                });
+            });
+            
+            // ===== CLICKS EN CARDS DE LUGARES =====
+            placeCards.forEach((card, index) => {
+                card.addEventListener('click', function() {
+                    const title = this.querySelector('.place-card-title').textContent;
+                    
+                    // Mapear nombres a IDs de lugares
+                    const placeMapping = {
+                        'Teotihuacán': 'teotihuacan',
+                        'Cancún': 'cancun',
+                        'Oaxaca': 'guadalajara',
+                        'Guanajuato': 'guadalajara',
+                        'Cozumel': 'cancun',
+                        'Chiapas': 'chichen-itza'
+                    };
+                    
+                    const placeId = placeMapping[title] || 'teotihuacan';
+                    
+                    // Redirigir a contenido educativo
+                    window.location.href = `05-educational-content.html?place=${placeId}`;
+                });
+            });
+            
+            // ===== FUNCIÓN PARA MOSTRAR MODAL DE LUGAR =====
+            function showPlaceModal(placeName) {
+                // Por ahora solo un alert, después se puede hacer un modal bonito
+                alert(`🗺️ Detalle del lugar:\n\n${placeName}\n\n(Modal próximamente...)`);
+            }
+            
+            // ===== FUNCIÓN PARA MOSTRAR NOTIFICACIONES =====
+            function showNotification(message) {
+                // Crear elemento de notificación
+                const notification = document.createElement('div');
+                notification.textContent = message;
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: rgba(16, 185, 129, 0.95);
+                    color: white;
+                    padding: 15px 25px;
+                    border-radius: 15px;
+                    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+                    font-weight: 600;
+                    z-index: 9999;
+                    animation: slideInRight 0.4s ease;
+                `;
+                
+                document.body.appendChild(notification);
+                
+                // Agregar animación
+                const style = document.createElement('style');
+                style.textContent = `
+                    @keyframes slideInRight {
+                        from {
+                            transform: translateX(400px);
+                            opacity: 0;
+                        }
+                        to {
+                            transform: translateX(0);
+                            opacity: 1;
+                        }
+                    }
+                    @keyframes slideOutRight {
+                        from {
+                            transform: translateX(0);
+                            opacity: 1;
+                        }
+                        to {
+                            transform: translateX(400px);
+                            opacity: 0;
+                        }
+                    }
+                    @keyframes pulse {
+                        0%, 100% { transform: scale(1); }
+                        50% { transform: scale(1.2); }
+                    }
+                `;
+                
+                if (!document.getElementById('notification-styles')) {
+                    style.id = 'notification-styles';
+                    document.head.appendChild(style);
+                }
+                
+                // Remover después de 3 segundos
+                setTimeout(() => {
+                    notification.style.animation = 'slideOutRight 0.4s ease';
+                    setTimeout(() => {
+                        notification.remove();
+                    }, 400);
+                }, 3000);
+            }
+            
+            // ===== LOGOUT =====
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function() {
+                    if (confirm('¿Estás seguro que deseas cerrar sesión?')) {
+                        // Limpiar localStorage
+                        localStorage.removeItem('isLoggedIn');
+                        localStorage.removeItem('username');
+                        
+                        // Mostrar mensaje
+                        showNotification('Sesión cerrada correctamente');
+                        
+                        // Redirigir al login después de 1 segundo
+                        setTimeout(() => {
+                            window.location.href = '01-login.html';
+                        }, 1000);
+                    }
+                });
+            }
+            
+            // ===== ANIMACIONES ADICIONALES =====
+            
+            // Animar iconos 3D aleatoriamente
+            const place3DIcons = document.querySelectorAll('.place-3d-icon');
+            place3DIcons.forEach((icon, index) => {
+                const randomDelay = Math.random() * 2;
+                const randomDuration = 2 + Math.random() * 2;
+                icon.style.animationDelay = `${randomDelay}s`;
+                icon.style.animationDuration = `${randomDuration}s`;
+            });
+            
+            // ===== EFECTOS DE HOVER EN STAT CARDS =====
+            const statCards = document.querySelectorAll('.stat-card');
+            statCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-8px) scale(1.02)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0) scale(1)';
+                });
+            });
+            
+            // ===== CLICKS EN BOTONES DE ACCIÓN =====
+            const iconBtns = document.querySelectorAll('.icon-btn:not(.logout-btn)');
+            iconBtns.forEach((btn, index) => {
+                btn.addEventListener('click', function() {
+                    const actions = ['Calendario', 'Estadísticas', 'Configuración'];
+                    if (index < actions.length) {
+                        alert(`Función "${actions[index]}" próximamente...`);
+                    }
+                });
+            });
+            
+            // ===== CLICKS EN BOTONES DE STAR =====
+            const starBtns = document.querySelectorAll('.card-star-btn');
+            starBtns.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    
+                    // Animación de rotación
+                    this.style.transform = 'rotate(360deg) scale(1.2)';
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1)';
+                    }, 600);
+                    
+                    showNotification('⭐ ¡Destacado!');
+                });
+            });
+            
+            // ===== CLICKS EN STORE BUTTONS =====
+            const storeBtns = document.querySelectorAll('.store-btn');
+            storeBtns.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    alert('🏪 Tienda próximamente...');
+                });
+            });
+            
+            const lockBtns = document.querySelectorAll('.lock-btn');
+            lockBtns.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    alert('🔒 Contenido bloqueado. Completa más lugares para desbloquear.');
+                });
+            });
+            
+            // ===== LINK "VER TODOS" =====
+            const viewAllLink = document.querySelector('.view-all-link');
+            if (viewAllLink) {
+                viewAllLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    alert('Pantalla de todos los lugares próximamente...');
+                });
+            }
+            
+            
+            // ===== NAVEGACIÓN DE CARDS =====
+            // Card de Lugares
+            const placesCard = document.querySelector('.places-card');
+            if (placesCard) {
+                placesCard.addEventListener('click', function() {
+                    window.location.href = '06-lugares-desbloqueados.html';
+                });
+            }
+            
+            // Card de Logros
+            const achievementsCard = document.querySelector('.achievements-card');
+            if (achievementsCard) {
+                achievementsCard.addEventListener('click', function() {
+                    window.location.href = '07-logros.html';
+                });
+            }
+            
+            // Card de Contenido Educativo
+            const pointsCard = document.querySelector('.points-card');
+            if (pointsCard) {
+                pointsCard.addEventListener('click', function() {
+                    window.location.href = '05-educational-content.html';
+                });
+            }
+            
+            // Card de Colección
+            const collectionCard = document.querySelector('.collection-card');
+            if (collectionCard) {
+                collectionCard.addEventListener('click', function() {
+                    window.location.href = '08-galeria-fotos.html';
+                });
+            }
+            
+            // Card de Tienda
+            const tourismCard = document.querySelector('.tourism-card');
+            if (tourismCard) {
+                tourismCard.addEventListener('click', function() {
+                    window.location.href = '09-tienda.html';
+                });
+            }
+            
+            // Card de Perfil
+            const profileCard = document.querySelector('.profile-card');
+            if (profileCard) {
+                profileCard.addEventListener('click', function() {
+                    window.location.href = '10-perfil.html';
+                });
+            }
+            
+            // Cursor pointer
+            document.querySelectorAll('.stat-card').forEach(card => card.style.cursor = 'pointer');
+
+            // ===== INICIALIZACIÓN =====
+            loadUserData();
+            
+            // Mensaje de bienvenida
+            setTimeout(() => {
+                const username = localStorage.getItem('username') || 'Usuario';
+                showNotification(`¡Bienvenido de vuelta, ${username}! 👋`);
+            }, 500);
+            
+            console.log('Dashboard cargado correctamente ✅');
+        });
+    </script>
+    
+</body>
+</html>

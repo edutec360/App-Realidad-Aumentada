@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AR México - Mi Colección</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #fc466b 0%, #3f5efb 100%);
+            color: #fff;
+            padding-bottom: 80px;
+        }
+        
+        /* Header */
+        .header {
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(20px);
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .back-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateX(-5px);
+        }
+        
+        .header-title {
+            font-size: 24px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .add-btn {
+            background: linear-gradient(135deg, #FF6B6B, #FFD93D);
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .add-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        /* Tabs */
+        .tabs-container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+        }
+        
+        .tab-btn {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            text-transform: uppercase;
+            font-size: 14px;
+            letter-spacing: 1px;
+        }
+        
+        .tab-btn.active {
+            background: linear-gradient(135deg, #FF6B6B, #FFD93D);
+            border-color: transparent;
+            box-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
+        }
+        
+        .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        /* Gallery Grid */
+        .gallery-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .photo-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.4s ease;
+            cursor: pointer;
+            animation: fadeInUp 0.6s ease backwards;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .photo-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            border-color: #FFD93D;
+        }
+        
+        .photo-image {
+            width: 100%;
+            height: 250px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 100px;
+            background: linear-gradient(135deg, 
+                rgba(252, 70, 107, 0.3) 0%, 
+                rgba(63, 94, 251, 0.3) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .photo-image::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 3s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .photo-tags {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            display: flex;
+            gap: 5px;
+        }
+        
+        .photo-tag {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .photo-actions {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            display: flex;
+            gap: 8px;
+        }
+        
+        .action-icon {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 18px;
+        }
+        
+        .action-icon:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+        
+        .photo-info {
+            padding: 20px;
+        }
+        
+        .photo-title {
+            font-size: 18px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+        
+        .photo-location {
+            font-size: 14px;
+            color: #FFD93D;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .photo-date {
+            font-size: 13px;
+            opacity: 0.7;
+            margin-bottom: 12px;
+        }
+        
+        .photo-notes {
+            font-size: 14px;
+            line-height: 1.5;
+            opacity: 0.9;
+            margin-bottom: 15px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .photo-stats {
+            display: flex;
+            gap: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 13px;
+        }
+        
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            display: none;
+        }
+        
+        .empty-state.active {
+            display: block;
+        }
+        
+        .empty-icon {
+            font-size: 100px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+        
+        .empty-title {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+        
+        .empty-text {
+            font-size: 16px;
+            opacity: 0.8;
+            margin-bottom: 30px;
+        }
+        
+        .empty-btn {
+            background: linear-gradient(135deg, #FF6B6B, #FFD93D);
+            border: none;
+            color: white;
+            padding: 15px 40px;
+            border-radius: 25px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            border-radius: 30px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-image {
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(135deg, rgba(252, 70, 107, 0.3), rgba(63, 94, 251, 0.3));
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 120px;
+            margin-bottom: 30px;
+        }
+        
+        .modal-title {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+        
+        .modal-location {
+            font-size: 16px;
+            color: #FFD93D;
+            margin-bottom: 20px;
+        }
+        
+        .modal-notes {
+            font-size: 16px;
+            line-height: 1.8;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .modal-btn {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 15px;
+            border-radius: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .modal-btn.primary {
+            background: linear-gradient(135deg, #FF6B6B, #FFD93D);
+        }
+        
+        /* Bottom Nav */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+            padding: 15px 0;
+            border-top: 2px solid rgba(255, 255, 255, 0.1);
+            z-index: 100;
+        }
+        
+        .nav-btn {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            padding: 10px 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-btn.active {
+            color: #FFD93D;
+        }
+        
+        .nav-icon {
+            font-size: 24px;
+        }
+        
+        .nav-label {
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .gallery-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tabs-container {
+                justify-content: flex-start;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- Header -->
+    <header class="header">
+        <button class="back-btn" onclick="goBack()">← Volver</button>
+        <h1 class="header-title">📸 Mi Colección</h1>
+        <button class="add-btn" onclick="openAddModal()">+ Agregar</button>
+    </header>
+    
+    <!-- Tabs -->
+    <div class="tabs-container">
+        <button class="tab-btn active" data-filter="all">Todas</button>
+        <button class="tab-btn" data-filter="food">🌮 Comida</button>
+        <button class="tab-btn" data-filter="monument">🏛️ Monumentos</button>
+        <button class="tab-btn" data-filter="nature">🌿 Naturaleza</button>
+        <button class="tab-btn" data-filter="culture">🎭 Cultura</button>
+        <button class="tab-btn" data-filter="beach">🏖️ Playas</button>
+    </div>
+    
+    <!-- Gallery -->
+    <div class="gallery-container">
+        <div class="gallery-grid" id="galleryGrid">
+            <!-- Se llenan dinámicamente -->
+        </div>
+        
+        <!-- Empty State -->
+        <div class="empty-state" id="emptyState">
+            <div class="empty-icon">📷</div>
+            <h2 class="empty-title">Aún no tienes fotos</h2>
+            <p class="empty-text">Comienza a capturar tus recuerdos de viaje</p>
+            <button class="empty-btn" onclick="goToScanner()">ESCANEAR LUGARES</button>
+        </div>
+    </div>
+    
+    <!-- Modal de Detalle -->
+    <div class="modal" id="photoModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">✕</button>
+            <div class="modal-image" id="modalImage">🏛️</div>
+            <h2 class="modal-title" id="modalTitle">Teotihuacán</h2>
+            <p class="modal-location" id="modalLocation">📍 Estado de México</p>
+            <p class="modal-notes" id="modalNotes">Increíble experiencia visitando las pirámides. El amanecer desde la Pirámide del Sol fue espectacular.</p>
+            <div class="modal-actions">
+                <button class="modal-btn" onclick="sharePhoto()">🔗 Compartir</button>
+                <button class="modal-btn" onclick="editPhoto()">✏️ Editar</button>
+                <button class="modal-btn primary" onclick="closeModal()">Cerrar</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bottom Nav -->
+    <nav class="bottom-nav">
+        <button class="nav-btn" onclick="goToDashboard()">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-label">Inicio</span>
+        </button>
+        <button class="nav-btn" onclick="goToScanner()">
+            <span class="nav-icon">📷</span>
+            <span class="nav-label">Escanear</span>
+        </button>
+        <button class="nav-btn" onclick="goToPassport()">
+            <span class="nav-icon">🗺️</span>
+            <span class="nav-label">Pasaporte</span>
+        </button>
+        <button class="nav-btn" onclick="goToProfile()">
+            <span class="nav-icon">👤</span>
+            <span class="nav-label">Perfil</span>
+        </button>
+    </nav>
+    
+    <script>
+        // ===== BASE DE DATOS DE FOTOS =====
+        const mockPhotos = [
+            { 
+                id: 1, 
+                placeId: 1, 
+                place: 'Teotihuacán', 
+                state: 'Estado de México', 
+                icon: '🏛️', 
+                category: 'monument',
+                date: '2024-12-15',
+                notes: 'Increíble experiencia visitando las pirámides. El amanecer desde la Pirámide del Sol fue espectacular.',
+                likes: 24,
+                views: 156
+            },
+            { 
+                id: 2, 
+                placeId: 2, 
+                place: 'Chichén Itzá', 
+                state: 'Yucatán', 
+                icon: '🗿', 
+                category: 'monument',
+                date: '2024-12-14',
+                notes: 'La magia de la cultura maya en todo su esplendor. La pirámide de Kukulcán es impresionante.',
+                likes: 42,
+                views: 289
+            },
+            { 
+                id: 3, 
+                placeId: 3, 
+                place: 'Cancún', 
+                state: 'Quintana Roo', 
+                icon: '🏖️', 
+                category: 'beach',
+                date: '2024-12-13',
+                notes: 'Playas paradisíacas y aguas cristalinas. Perfecto para descansar y disfrutar del Caribe mexicano.',
+                likes: 67,
+                views: 421
+            },
+            { 
+                id: 4, 
+                placeId: 4, 
+                place: 'Guadalajara', 
+                state: 'Jalisco', 
+                icon: '🎊', 
+                category: 'culture',
+                date: '2024-12-12',
+                notes: 'La cuna del mariachi y el tequila. Ciudad llena de tradición y cultura mexicana.',
+                likes: 31,
+                views: 198
+            },
+            { 
+                id: 5, 
+                placeId: 21, 
+                place: 'Tequila', 
+                state: 'Jalisco', 
+                icon: '🥃', 
+                category: 'food',
+                date: '2024-12-11',
+                notes: 'Tour por las destilerías de tequila. Aprendí mucho sobre el proceso de producción.',
+                likes: 38,
+                views: 267
+            },
+            { 
+                id: 6, 
+                placeId: 5, 
+                place: 'Palenque', 
+                state: 'Chiapas', 
+                icon: '🌴', 
+                category: 'nature',
+                date: '2024-12-10',
+                notes: 'Ruinas mayas rodeadas de selva tropical. Un lugar místico y lleno de historia.',
+                likes: 29,
+                views: 175
+            }
+        ];
+        
+        // ===== VARIABLES GLOBALES =====
+        let currentFilter = 'all';
+        let userPhotos = [];
+        
+        // ===== INICIALIZACIÓN =====
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+            loadPhotos();
+            setupTabs();
+            renderGallery();
+        });
+        
+        // ===== CARGAR FOTOS =====
+        function loadPhotos() {
+            const scannedPlaces = JSON.parse(localStorage.getItem('scannedPlaces')) || [];
+            
+            // Solo mostrar fotos de lugares escaneados
+            userPhotos = mockPhotos.filter(photo => scannedPlaces.includes(photo.placeId));
+        }
+        
+        // ===== CONFIGURAR TABS =====
+        function setupTabs() {
+            const tabs = document.querySelectorAll('.tab-btn');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    currentFilter = this.dataset.filter;
+                    renderGallery();
+                });
+            });
+        }
+        
+        // ===== RENDERIZAR GALERÍA =====
+        function renderGallery() {
+            const grid = document.getElementById('galleryGrid');
+            const emptyState = document.getElementById('emptyState');
+            
+            // Filtrar fotos
+            let filtered = userPhotos;
+            if (currentFilter !== 'all') {
+                filtered = userPhotos.filter(photo => photo.category === currentFilter);
+            }
+            
+            // Limpiar grid
+            grid.innerHTML = '';
+            
+            // Mostrar empty state si no hay fotos
+            if (filtered.length === 0) {
+                emptyState.classList.add('active');
+                grid.style.display = 'none';
+                return;
+            }
+            
+            emptyState.classList.remove('active');
+            grid.style.display = 'grid';
+            
+            // Renderizar cada foto
+            filtered.forEach((photo, index) => {
+                const card = document.createElement('div');
+                card.className = 'photo-card';
+                card.style.animationDelay = `${index * 0.1}s`;
+                card.onclick = () => openPhotoModal(photo);
+                
+                card.innerHTML = `
+                    <div class="photo-image">
+                        ${photo.icon}
+                        <div class="photo-tags">
+                            <span class="photo-tag">${getCategoryName(photo.category)}</span>
+                        </div>
+                        <div class="photo-actions">
+                            <div class="action-icon" onclick="event.stopPropagation(); likePhoto(${photo.id})">❤️</div>
+                            <div class="action-icon" onclick="event.stopPropagation(); sharePhoto(${photo.id})">🔗</div>
+                        </div>
+                    </div>
+                    <div class="photo-info">
+                        <h3 class="photo-title">${photo.place}</h3>
+                        <p class="photo-location">
+                            <span>📍</span>
+                            <span>${photo.state}</span>
+                        </p>
+                        <p class="photo-date">📅 ${formatDate(photo.date)}</p>
+                        <p class="photo-notes">${photo.notes}</p>
+                        <div class="photo-stats">
+                            <div class="stat-item">
+                                <span>❤️</span>
+                                <span>${photo.likes}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span>👁️</span>
+                                <span>${photo.views}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                grid.appendChild(card);
+            });
+        }
+        
+        // ===== MODAL =====
+        function openPhotoModal(photo) {
+            const modal = document.getElementById('photoModal');
+            document.getElementById('modalImage').textContent = photo.icon;
+            document.getElementById('modalTitle').textContent = photo.place;
+            document.getElementById('modalLocation').textContent = `📍 ${photo.state}`;
+            document.getElementById('modalNotes').textContent = photo.notes;
+            modal.classList.add('active');
+        }
+        
+        function closeModal() {
+            document.getElementById('photoModal').classList.remove('active');
+        }
+        
+        // ===== HELPERS =====
+        function getCategoryName(category) {
+            const names = {
+                food: 'Comida',
+                monument: 'Monumento',
+                nature: 'Naturaleza',
+                culture: 'Cultura',
+                beach: 'Playa'
+            };
+            return names[category] || 'Otro';
+        }
+        
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('es-MX', { 
+                day: 'numeric', 
+                month: 'long', 
+                year: 'numeric' 
+            });
+        }
+        
+        // ===== ACCIONES =====
+        function likePhoto(photoId) {
+            alert('¡Foto marcada como favorita! ❤️');
+        }
+        
+        function sharePhoto(photoId) {
+            alert('📱 Compartiendo en redes sociales...');
+        }
+        
+        function editPhoto() {
+            alert('✏️ Función de edición en desarrollo');
+        }
+        
+        function openAddModal() {
+            alert('📷 Escanea un lugar para agregar fotos a tu colección');
+            goToScanner();
+        }
+        
+        // ===== NAVEGACIÓN =====
+        function goBack() {
+            window.location.href = '02-dashboard.html';
+        }
+        
+        function goToDashboard() {
+            window.location.href = '02-dashboard.html';
+        }
+        
+        function goToScanner() {
+            window.location.href = '03-scanner.html';
+        }
+        
+        function goToPassport() {
+            window.location.href = '04-passport.html';
+        }
+        
+        function goToProfile() {
+            alert('Perfil en desarrollo');
+        }
+        
+        function checkAuth() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            if (!isLoggedIn || isLoggedIn !== 'true') {
+                window.location.href = '01-login.html';
+            }
+        }
+    </script>
+</body>
+</html>
